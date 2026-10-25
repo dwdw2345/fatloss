@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="减脂工作台">
+<meta name="theme-color" content="#0E6E7A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230E6E7A'/%3E%3Cpath d='M24 64h52M32 64V42h36v22' stroke='white' stroke-width='7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>减脂工作台</title>
+<style>
+:root{
+  --bg:#F3F5F7; --card:#FFFFFF; --text:#1F2937; --muted:#6B7280; --line:#E5E7EB;
+  --accent:#0E6E7A; --accent2:#1F3A4D; --soft:#EAF3F4; --warn:#C0662A; --good:#2E7D5B;
+  --danger:#C0392B; --radius:16px; --shadow:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5;padding-bottom:84px;-webkit-font-smoothing:antialiased}
+#app{max-width:560px;margin:0 auto;padding:0 14px}
+header{position:sticky;top:0;z-index:20;background:rgba(243,245,247,.93);backdrop-filter:blur(10px);padding:10px 2px 8px}
+.brand-row{display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:19px;font-weight:800;color:var(--accent2);letter-spacing:.5px}
+.save-dot{font-size:11px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.datebar{display:flex;align-items:center;gap:8px;margin-top:8px}
+.navbtn{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:20px;color:var(--accent2);line-height:1}
+.date-chip{flex:1;height:36px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#dateInput{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+main{margin-top:6px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;border:1px solid rgba(229,231,235,.7)}
+.card h3{margin:0 0 10px;font-size:15px;color:var(--accent2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h3 .sub{font-size:12px;font-weight:500;color:var(--muted)}
+.row{display:flex;gap:10px}
+.row>*{flex:1;min-width:0}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;font-size:16px;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 10px;outline:none}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,110,122,.10)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:12px;padding:11px 14px;font-size:15px;font-weight:700;color:#fff;background:var(--accent);width:100%}
+.btn.ghost{background:#fff;color:var(--accent2);border:1px solid var(--line)}
+.btn.soft{background:var(--soft);color:var(--accent)}
+.btn.danger{background:#fff;color:var(--danger);border:1px solid #F3C9C4}
+.btn.sm{width:auto;padding:8px 12px;font-size:13px;border-radius:10px}
+.big{font-size:30px;font-weight:800;color:var(--accent2);line-height:1.1}
+.unit{font-size:13px;font-weight:600;color:var(--muted);margin-left:3px}
+.muted{color:var(--muted);font-size:12px}
+.small{font-size:11px;color:#9CA3AF}
+.pill{background:var(--soft);color:var(--accent2);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600}
+.pill.grey{background:#F3F4F6;color:var(--muted)}
+.progress{height:10px;border-radius:999px;background:#EEF1F4;overflow:hidden;margin:10px 0 6px}
+.progress>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#0E6E7A,#39A0A8);width:0}
+.progress>i.over{background:linear-gradient(90deg,#C0662A,#E08A4A)}
+.macro-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.macro{background:#F8FAFB;border-radius:12px;padding:8px;text-align:center}
+.macro b{display:block;font-size:15px;color:var(--accent2)}
+.macro span{font-size:11px;color:var(--muted)}
+.meal{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:#fff}
+.meal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
+.meal-title{font-weight:800;color:var(--accent2);font-size:14px}
+.meal-kcal{font-size:12px;color:var(--muted);font-weight:700;text-align:right}
+.food-item{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #EDF0F2;gap:8px}
+.food-item:last-child{border-bottom:none}
+.food-name{font-size:14px;font-weight:600}
+.food-meta{font-size:11px;color:var(--muted)}
+.icon-btn{border:none;background:transparent;font-size:16px;padding:4px 6px;color:var(--muted)}
+.add-line{width:100%;border:1px dashed #CBD5DB;background:#FAFCFC;color:var(--accent);border-radius:10px;padding:9px;font-size:13px;font-weight:700;margin-top:8px}
+.empty{color:#9CA3AF;font-size:12px;padding:8px 0}
+.tabbar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:560px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:30}
+.tabbar button{border:none;background:transparent;padding:6px 2px;border-radius:10px;color:#94A3B8;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabbar button .ic{font-size:19px;line-height:1}
+.tabbar button.active{color:var(--accent);background:var(--soft)}
+.trend-up{color:var(--warn);font-weight:700}
+.trend-down{color:var(--good);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:7px 4px;border-bottom:1px solid #EEF1F4;text-align:center}
+th{color:var(--muted);font-weight:600;font-size:11px}
+.chart-wrap{margin-top:4px}
+.legend{display:flex;gap:12px;justify-content:center;margin-top:2px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.lg{display:inline-flex;align-items:center}
+.sheet-wrap{position:fixed;inset:0;z-index:50;display:none}
+.sheet-wrap.open{display:block}
+.backdrop{position:absolute;inset:0;background:rgba(15,23,42,.42)}
+.sheet{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:560px;max-height:86vh;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));animation:up .18s ease-out}
+@keyframes up{from{transform:translate(-50%,16px)}to{transform:translate(-50%,0)}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.sheet-head h3{margin:0;font-size:16px;color:var(--accent2)}
+.close{border:none;background:#F3F4F6;border-radius:999px;width:32px;height:32px;font-size:15px;color:var(--muted);flex:none}
+.search{position:sticky;top:0;background:#fff;padding-bottom:8px;z-index:2}
+.food-list{max-height:44vh;overflow:auto;margin-top:4px}
+.food-row{display:flex;justify-content:space-between;align-items:center;padding:11px 4px;border-bottom:1px solid #F1F3F5;gap:8px}
+.food-row .n{font-size:15px;font-weight:600}
+.food-row .k{font-size:11px;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;color:var(--accent2);font-weight:600}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.big-input{font-size:26px;font-weight:800;text-align:center;padding:12px;color:var(--accent2)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:rgba(31,58,77,.94);color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;transition:.25s;z-index:80;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.help{font-size:12px;color:var(--muted);line-height:1.65}
+.help b{color:var(--accent2)}
+.hr{height:1px;background:#EEF1F4;margin:12px 0}
+.footer-note{text-align:center;color:#9CA3AF;font-size:11px;padding:10px 0 4px}
+.seg{display:flex;gap:6px;overflow:auto;padding-bottom:4px;margin-bottom:10px}
+.seg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;flex:none}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi{background:#F8FAFB;border-radius:12px;padding:10px}
+.kpi b{display:block;font-size:17px;color:var(--accent2)}
+.kpi span{font-size:11px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:700}
+.badge.green{background:#E7F4EC;color:#2E7D5B}.badge.orange{background:#FDF2E9;color:#C0662A}
+.badge.red{background:#FBEAE8;color:#C0392B}.badge.blue{background:#EAF3F4;color:#0E6E7A}
+.badge.grey{background:#F3F4F6;color:#6B7280}
+.ex{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
+.ex .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ex .meta{font-size:11px;color:var(--muted);margin-top:2px}
+.ex .cue{font-size:12px;color:#4B5563;margin-top:6px;line-height:1.5}
+.timer-big{font-size:62px;font-weight:800;text-align:center;color:var(--accent2);font-variant-numeric:tabular-nums;line-height:1.1}
+.timer-phase{text-align:center;font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.bar-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.bar-row .lbl{width:40px;font-size:12px;color:var(--muted);flex:none}
+.bar{flex:1;height:8px;background:#EEF1F4;border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.notice{background:#FFF8ED;border:1px solid #F3D9B8;border-radius:12px;padding:10px 12px;font-size:12px;color:#7A4A1E;line-height:1.6}
+.notice.blue{background:#EFF7F8;border-color:#CFE6E8;color:#0E5A63}
+.notice.red{background:#FBEAE8;border-color:#F3C9C4;color:#8E2B20}
+.mini{font-size:11px;color:#9CA3AF}
+.tabs2{display:flex;gap:6px;overflow:auto;margin-bottom:10px}
+.tabs2 button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 10px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tabs2 button.on{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand-row"><div class="brand">减脂工作台</div><div class="save-dot" id="saveDot">✓ 已保存</div></div>
+    <div class="datebar" id="datebar">
+      <button class="navbtn" onclick="shiftDate(-1)">‹</button>
+      <button class="date-chip" id="dateLabel" onclick="openDatePicker()">今天</button>
+      <button class="navbtn" onclick="shiftDate(1)">›</button>
+      <input type="date" id="dateInput" onchange="pickDate(this.value)">
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+<nav class="tabbar" id="tabbar">
+  <button data-v="today" onclick="setView('today')"><span class="ic">🏠</span>今日</button>
+  <button data-v="diet" onclick="setView('diet')"><span class="ic">🍽️</span>饮食</button>
+  <button data-v="train" onclick="setView('train')"><span class="ic">🏋️</span>训练</button>
+  <button data-v="body" onclick="setView('body')"><span class="ic">📐</span>身体</button>
+  <button data-v="me" onclick="setView('me')"><span class="ic">⚙️</span>我的</button>
+</nav>
+<div class="sheet-wrap" id="sheetWrap"><div class="backdrop" onclick="closeSheet()"></div><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== 常量与数据 ===================== */
+const KEY='fatloss_workbench_v2';
+const MEALS=[{id:'breakfast',name:'早餐',icon:'🌅'},{id:'lunch',name:'午餐',icon:'☀️'},{id:'dinner',name:'晚餐',icon:'🌙'},{id:'snack',name:'加餐',icon:'🍎'}];
+const ACTIVITY=[
+  {v:1.2,label:'久坐（几乎不运动）'},
+  {v:1.375,label:'轻度（1–3 次/周）'},
+  {v:1.55,label:'中度（3–5 次/周）'},
+  {v:1.725,label:'高度（6–7 次/周）'},
+  {v:1.9,label:'极高（体力工作/一天两练）'}
+];
+const GOALS=[{id:'lose',name:'减脂'},{id:'maintain',name:'维持'},{id:'gain',name:'增肌'}];
+const FOOD_CATS=['全部','主食','肉蛋','水产','豆乳','蔬菜','水果','坚果','油脂','调味','饮品','零食','菜肴'];
+const FOOD_DB=[
+// 主食
+["米饭（熟）",116,2.6,0.3,25.9,"主食"],["糙米饭（熟）",112,2.6,0.9,23.0,"主食"],["白粥",46,1.1,0.3,9.9,"主食"],
+["小米粥",46,1.4,0.7,8.4,"主食"],["馒头",223,7.0,1.1,47.0,"主食"],["花卷",217,6.4,1.0,45.6,"主食"],
+["面条（熟）",110,3.9,0.4,22.0,"主食"],["米粉（熟）",109,2.0,0.2,25.0,"主食"],["河粉（熟）",110,1.5,0.3,25.0,"主食"],
+["年糕",154,3.3,0.6,34.7,"主食"],["燕麦片",377,13.2,6.7,66.0,"主食"],["全麦面包",246,9.0,3.3,46.0,"主食"],
+["白面包",265,8.3,3.3,50.0,"主食"],["玉米（鲜）",106,4.0,1.2,22.0,"主食"],["红薯",86,1.6,0.1,20.0,"主食"],
+["紫薯",82,1.9,0.2,19.0,"主食"],["土豆",77,2.0,0.2,17.0,"主食"],["山药",57,1.9,0.2,12.4,"主食"],
+["芋头",56,2.2,0.2,12.7,"主食"],["藜麦（熟）",120,4.4,1.9,21.3,"主食"],["意大利面（熟）",131,5.0,1.1,25.0,"主食"],
+["油条",386,6.9,17.6,51.0,"主食"],["烧饼",326,8.0,9.0,55.0,"主食"],["煎饼",336,7.6,10.0,54.0,"主食"],
+["包子（猪肉）",227,7.0,8.0,32.0,"主食"],["饺子",240,9.0,9.0,30.0,"主食"],["馄饨",210,8.0,7.0,29.0,"主食"],
+["粽子",195,4.5,5.0,33.0,"主食"],["汤圆",311,4.0,10.0,52.0,"主食"],["方便面",473,9.5,21.1,61.6,"主食"],
+// 肉蛋
+["鸡蛋",143,12.6,9.5,0.7,"肉蛋"],["鸡蛋白",52,10.9,0.2,0.7,"肉蛋"],["鸡蛋黄",328,15.2,28.2,3.4,"肉蛋"],
+["鸡胸肉（生）",110,23.0,1.9,0,"肉蛋"],["鸡腿肉（去皮）",120,19.0,4.5,0,"肉蛋"],["鸡翅",194,17.4,11.8,4.6,"肉蛋"],
+["鸭肉",240,15.5,19.7,0.2,"肉蛋"],["猪里脊",155,20.2,7.9,0.7,"肉蛋"],["猪瘦肉",143,20.3,6.2,1.5,"肉蛋"],
+["猪五花",568,9.3,59.0,0,"肉蛋"],["排骨",278,16.7,23.1,0.7,"肉蛋"],["牛腱",106,20.2,2.3,1.2,"肉蛋"],
+["牛腩",332,17.1,29.3,0,"肉蛋"],["牛肉（瘦）",106,20.2,2.3,1.2,"肉蛋"],["羊肉（瘦）",118,20.5,3.9,0.2,"肉蛋"],
+["火腿肠",212,14.0,10.4,15.6,"肉蛋"],["培根",181,22.3,10.0,2.6,"肉蛋"],["午餐肉",229,12.0,18.0,6.0,"肉蛋"],
+["香肠",508,24.1,40.7,11.2,"肉蛋"],
+// 水产
+["草鱼",113,16.6,5.2,0,"水产"],["鲈鱼",105,18.6,3.4,0,"水产"],["鲫鱼",108,17.1,2.7,3.8,"水产"],
+["带鱼",127,17.7,4.9,3.1,"水产"],["三文鱼",139,17.2,7.8,0,"水产"],["金枪鱼（水浸）",116,25.5,1.0,0,"水产"],
+["鳕鱼",88,20.4,0.5,0,"水产"],["虾仁",87,18.6,0.8,0.6,"水产"],["基围虾",101,18.2,1.4,3.9,"水产"],
+["螃蟹",103,17.5,2.6,2.3,"水产"],["扇贝",60,11.1,0.6,2.6,"水产"],["鱿鱼",84,17.4,1.6,0,"水产"],
+["蛤蜊",62,10.1,1.1,2.8,"水产"],
+// 豆乳
+["豆浆（无糖）",31,3.0,1.6,1.2,"豆乳"],["北豆腐",116,12.2,4.8,2.0,"豆乳"],["南豆腐",57,6.2,2.5,2.4,"豆乳"],
+["豆干",140,16.2,3.6,11.5,"豆乳"],["腐竹",459,44.6,21.7,22.3,"豆乳"],["毛豆",131,13.1,5.0,10.5,"豆乳"],
+["黄豆",390,35.0,16.0,34.2,"豆乳"],["黑豆",401,36.0,15.9,33.6,"豆乳"],["鹰嘴豆",364,19.3,6.0,60.7,"豆乳"],
+["低脂牛奶",42,3.4,1.3,5.0,"豆乳"],["全脂牛奶",65,3.3,3.6,4.9,"豆乳"],["无糖希腊酸奶",59,10.0,0.4,3.6,"豆乳"],
+["原味酸奶",72,2.5,2.7,9.3,"豆乳"],["奶酪",328,25.7,23.5,3.5,"豆乳"],["乳清蛋白粉",400,80.0,5.0,8.0,"豆乳"],
+// 蔬菜
+["大白菜",17,1.5,0.1,3.2,"蔬菜"],["小白菜",15,1.5,0.3,2.7,"蔬菜"],["油菜",25,1.8,0.5,3.8,"蔬菜"],
+["菠菜",28,2.6,0.3,4.5,"蔬菜"],["生菜",15,1.4,0.2,2.9,"蔬菜"],["西兰花",34,2.8,0.4,7.0,"蔬菜"],
+["花菜",24,1.9,0.4,4.6,"蔬菜"],["芹菜",20,0.8,0.1,4.5,"蔬菜"],["韭菜",26,2.4,0.4,4.6,"蔬菜"],
+["茄子",23,1.1,0.2,5.4,"蔬菜"],["青椒",22,1.0,0.2,5.4,"蔬菜"],["番茄",18,0.9,0.2,3.9,"蔬菜"],
+["黄瓜",15,0.7,0.1,3.6,"蔬菜"],["冬瓜",11,0.4,0.2,2.6,"蔬菜"],["丝瓜",20,1.0,0.2,4.2,"蔬菜"],
+["苦瓜",19,1.0,0.1,4.9,"蔬菜"],["南瓜",23,0.7,0.1,5.3,"蔬菜"],["莲藕",73,1.9,0.2,16.4,"蔬菜"],
+["豆角",30,1.5,0.2,6.7,"蔬菜"],["四季豆",31,1.9,0.2,6.5,"蔬菜"],["豌豆",105,7.4,0.3,21.2,"蔬菜"],
+["胡萝卜",41,0.9,0.2,9.6,"蔬菜"],["白萝卜",21,0.9,0.1,5.0,"蔬菜"],["洋葱",40,1.1,0.2,9.3,"蔬菜"],
+["蘑菇",26,2.7,0.4,4.0,"蔬菜"],["香菇",26,2.2,0.3,5.2,"蔬菜"],["木耳（水发）",27,1.5,0.2,6.0,"蔬菜"],
+["海带（水发）",13,1.2,0.1,2.1,"蔬菜"],["紫菜（干）",250,26.7,1.1,44.1,"蔬菜"],["芦笋",22,2.2,0.1,4.9,"蔬菜"],
+["秋葵",37,1.9,0.2,7.5,"蔬菜"],
+// 水果
+["苹果",52,0.3,0.2,14.0,"水果"],["梨",51,0.4,0.2,13.3,"水果"],["桃",48,0.9,0.1,12.2,"水果"],
+["葡萄",45,0.5,0.2,10.3,"水果"],["西瓜",31,0.6,0.1,7.9,"水果"],["哈密瓜",34,0.5,0.1,8.2,"水果"],
+["芒果",35,0.6,0.2,8.3,"水果"],["菠萝",44,0.5,0.1,10.8,"水果"],["猕猴桃",61,0.8,0.6,14.5,"水果"],
+["火龙果",55,1.1,0.2,13.3,"水果"],["柚子",42,0.8,0.2,10.7,"水果"],["橘子",44,0.7,0.2,10.2,"水果"],
+["橙子",47,0.9,0.1,12.0,"水果"],["香蕉",89,1.1,0.3,23.0,"水果"],["蓝莓",57,0.7,0.3,14.0,"水果"],
+["草莓",32,0.7,0.3,7.7,"水果"],["樱桃",46,1.1,0.2,10.2,"水果"],["荔枝",71,0.9,0.2,16.6,"水果"],
+["龙眼",71,1.2,0.1,16.6,"水果"],["榴莲",150,2.6,3.3,28.3,"水果"],["牛油果",160,2.0,15.0,9.0,"水果"],
+["枣（鲜）",122,1.1,0.3,30.5,"水果"],["柿子",71,0.4,0.1,18.5,"水果"],["柠檬",37,1.1,1.2,6.2,"水果"],
+// 坚果
+["混合坚果",600,20.0,54.0,20.0,"坚果"],["花生",574,24.8,44.3,21.7,"坚果"],["瓜子",606,22.6,52.8,12.5,"坚果"],
+["腰果",553,18.2,43.8,30.2,"坚果"],["开心果",562,20.2,45.3,27.2,"坚果"],["榛子",628,15.0,60.8,16.7,"坚果"],
+["夏威夷果",718,7.9,75.8,13.8,"坚果"],["核桃",654,15.2,65.2,13.7,"坚果"],["杏仁",579,21.2,49.9,21.6,"坚果"],
+["芝麻",559,19.1,46.1,24.0,"坚果"],["亚麻籽",534,18.3,42.2,28.9,"坚果"],["奇亚籽",486,16.5,30.7,42.1,"坚果"],
+// 油脂
+["食用油",900,0,100,0,"油脂"],["橄榄油",900,0,100,0,"油脂"],["花生油",900,0,100,0,"油脂"],
+["菜籽油",900,0,100,0,"油脂"],["黄油",717,0.9,81.1,0.1,"油脂"],["猪油",897,0,99.6,0,"油脂"],
+["芝麻酱",630,19.2,52.7,22.7,"油脂"],["花生酱",588,25.0,50.0,20.0,"油脂"],
+// 调味
+["酱油",63,5.6,0.1,10.0,"调味"],["蚝油",51,1.5,0.1,11.0,"调味"],["豆瓣酱",178,13.6,6.8,17.1,"调味"],
+["番茄酱",81,1.5,0.2,19.6,"调味"],["沙拉酱",680,1.0,75.0,3.0,"调味"],["千岛酱",475,1.5,45.0,15.0,"调味"],
+["蜂蜜",304,0.3,0,82.0,"调味"],["白糖",400,0,0,100.0,"调味"],["红糖",389,0.7,0,96.6,"调味"],
+// 饮品
+["可乐",43,0,0,10.8,"饮品"],["雪碧",40,0,0,10.0,"饮品"],["橙汁",45,0.7,0.2,10.4,"饮品"],
+["奶茶",90,1.0,3.0,14.0,"饮品"],["啤酒",43,0.5,0,3.6,"饮品"],["红酒",85,0.1,0,2.6,"饮品"],
+["白酒",298,0,0,0,"饮品"],["黑咖啡",2,0.1,0,0,"饮品"],["拿铁",55,2.8,2.5,5.0,"饮品"],
+// 零食
+["薯片",548,6.6,34.0,52.0,"零食"],["饼干",435,7.0,14.0,70.0,"零食"],["蛋糕",347,6.0,15.0,47.0,"零食"],
+["巧克力",586,4.3,40.1,51.9,"零食"],["冰淇淋",207,3.5,11.0,24.0,"零食"],["蛋挞",375,5.0,22.0,40.0,"零食"],
+// 菜肴（估算）
+["番茄炒蛋",86,5.0,5.5,4.5,"菜肴"],["青椒肉丝",128,9.0,8.0,5.0,"菜肴"],["宫保鸡丁",170,12.0,10.0,8.0,"菜肴"],
+["鱼香肉丝",155,9.0,10.0,8.0,"菜肴"],["红烧肉",470,12.0,45.0,5.0,"菜肴"],["清蒸鱼",105,18.0,3.0,1.0,"菜肴"],
+["麻婆豆腐",120,7.0,8.0,6.0,"菜肴"],["蛋炒饭",180,5.0,6.0,26.0,"菜肴"],["炒面",200,6.0,7.0,28.0,"菜肴"],
+["麻辣烫",120,6.0,7.0,10.0,"菜肴"],["酸菜鱼",110,12.0,5.0,3.0,"菜肴"],["小炒肉",190,12.0,14.0,4.0,"菜肴"]
+].map(a=>({n:a[0],k:a[1],p:a[2],f:a[3],c:a[4],cat:a[5]}));
+
+const EXERCISES=[
+// 力量 / 肌肥大
+["杠铃深蹲","力量","腿","杠铃","复合","脚与肩同宽，膝盖对齐脚尖，髋膝同时屈","高脚杯深蹲","暂停深蹲/加重量",4,"5-8",150],
+["高脚杯深蹲","肌肥大","腿","哑铃","复合","抱哑铃于胸前，下蹲至大腿平行","自重深蹲","加哑铃重量",3,"8-12",90],
+["腿举","肌肥大","腿","器械","复合","脚踩踏板中部，下放至膝约 90°","腿屈伸","增加重量",3,"10-12",90],
+["保加利亚分腿蹲","肌肥大","腿","哑铃","复合","后脚搭凳，前脚发力，躯干略前倾","箭步蹲","加哑铃",3,"8-12/腿",90],
+["罗马尼亚硬拉","肌肥大","腿","杠铃","复合","髋主导，膝微屈，背中立，下放到小腿中段","哑铃 RDL","加重量",3,"8-10",120],
+["传统硬拉","力量","全身","杠铃","复合","杠铃贴小腿，背中立，脚蹬地起身","罗马尼亚硬拉","加重量",4,"3-5",180],
+["臀推","肌肥大","臀","杠铃","复合","肩靠凳，顶端夹臀，肋骨下沉","臀桥","加重量",3,"8-12",90],
+["臀桥","核心","臀","自重","孤立","脚跟发力，顶端停 1 秒","蚌式开合","单腿臀桥",3,"12-15",60],
+["腿弯举","肌肥大","腿","器械","孤立","慢放，感受腘绳肌","单腿弯举","加重量",3,"10-12",60],
+["腿屈伸","肌肥大","腿","器械","孤立","顶端停 1 秒","单腿屈伸","加重量",3,"12",60],
+["提踵","肌肥大","小腿","器械","孤立","全幅度，顶端停 1 秒","自重提踵","单腿提踵",4,"12-15",60],
+["杠铃卧推","力量","胸","杠铃","复合","肩胛后缩下沉，杠铃触胸","哑铃卧推","加重量",4,"5-8",150],
+["哑铃卧推","肌肥大","胸","哑铃","复合","肘约 45°，下放到胸部两侧","俯卧撑","加重量",3,"8-12",90],
+["上斜哑铃卧推","肌肥大","胸","哑铃","复合","椅背 30–45°，推向上方","上斜俯卧撑","加重量",3,"8-12",90],
+["俯卧撑","肌肥大","胸","自重","复合","身体成直线，肘不外张","跪姿俯卧撑","加负重/下斜",3,"8-15",60],
+["双杠臂屈伸","肌肥大","胸","自重","复合","身体略前倾，肘向后","辅助带","加负重",3,"6-10",90],
+["蝴蝶机夹胸","肌肥大","胸","器械","孤立","肘微屈，顶峰收缩","哑铃飞鸟","加重量",3,"12-15",60],
+["引体向上","力量","背","自重","复合","肩胛下沉，拉到下巴过杠","高位下拉","加负重",4,"5-10",120],
+["高位下拉","肌肥大","背","器械","复合","下拉到锁骨，肘向下","辅助引体","加重量",3,"10-12",90],
+["杠铃划船","力量","背","杠铃","复合","髋屈，背中立，拉向下腹","哑铃划船","加重量",4,"6-10",120],
+["单臂哑铃划船","肌肥大","背","哑铃","复合","肘贴身体，拉到髋部","坐姿划船","加重量",3,"10-12/侧",90],
+["坐姿绳索划船","肌肥大","背","绳索","复合","挺胸，肩胛后缩","单臂划船","加重量",3,"10-12",90],
+["直臂下压","肌肥大","背","绳索","孤立","肘微屈，压到大腿前","哑铃 pullover","加重量",3,"12-15",60],
+["站姿推举","力量","肩","杠铃","复合","核心收紧，杠铃过头","哑铃推举","加重量",4,"6-10",120],
+["哑铃侧平举","肌肥大","肩","哑铃","孤立","肘微屈，抬到肩高","弹力带侧平举","加重量",3,"12-15",60],
+["哑铃前平举","肌肥大","肩","哑铃","孤立","抬到肩高，不耸肩","弹力带前平举","加重量",3,"12-15",60],
+["面拉","功能性","肩","绳索","孤立","拉向面部，肩胛后缩","弹力带面拉","加重量",3,"15",60],
+["反向飞鸟","肌肥大","肩","哑铃","孤立","俯身，肘微屈，向后打开","蝴蝶机反向","加重量",3,"12-15",60],
+["杠铃弯举","肌肥大","手臂","杠铃","孤立","肘固定，慢放","哑铃弯举","加重量",3,"8-12",60],
+["哑铃弯举","肌肥大","手臂","哑铃","孤立","肘固定，顶峰收缩","锤式弯举","加重量",3,"10-12",60],
+["锤式弯举","肌肥大","手臂","哑铃","孤立","掌心相对，肘固定","绳索弯举","加重量",3,"10-12",60],
+["绳索下压","肌肥大","手臂","绳索","孤立","肘固定，伸直到位","窄距俯卧撑","加重量",3,"12-15",60],
+["窄距卧推","肌肥大","手臂","杠铃","复合","握距略窄于肩，肘贴近身体","绳索下压","加重量",3,"8-10",90],
+["仰卧臂屈伸","肌肥大","手臂","哑铃","孤立","肘固定，下放到额头上方","绳索下压","加重量",3,"10-12",60],
+// 功能性
+["壶铃摇摆","功能性","全身","壶铃","复合","髋铰链发力，壶铃摆到胸高","罗马尼亚硬拉","加重/加次数",4,"15-20",60],
+["土耳其起立","功能性","全身","壶铃","复合","慢速分步起身，眼睛看壶铃","空手练习","加重量",3,"3-5/侧",90],
+["农夫行走","功能性","全身","哑铃","复合","挺胸收腹，小步快走","单侧农夫行走","加重量/距离",3,"30-40m",90],
+["雪橇推","功能性","全身","器械","复合","身体前倾，小步推","负重行走","加重量",4,"20m",90],
+["战绳","体能","全身","绳索","复合","半蹲，快速交替甩绳","壶铃摇摆","加时间",3,"30-40s",60],
+["药球砸地","功能性","全身","药球","复合","举过头顶，全身发力砸地","自重深蹲跳","加球重",4,"10-12",60],
+["跳箱","体能","腿","箱","复合","摆臂起跳，轻落","深蹲跳","加高度",3,"6-8",90],
+["单腿罗马尼亚硬拉","功能性","腿","哑铃","复合","支撑腿微屈，髋折叠，背中立","扶墙单腿 RDL","加重量",3,"8-10/侧",60],
+["台阶上步","功能性","腿","哑铃","复合","前脚踩稳，后脚蹬起","自重台阶","加哑铃",3,"10-12/腿",60],
+["帕洛夫推","核心","核心","绳索","孤立","抗旋转，身体不转","弹力带帕洛夫","加重量",3,"10-12/侧",60],
+["熊爬","功能性","全身","自重","复合","膝离地，手脚交替小步","鸟狗","加距离",3,"20-30s",60],
+["侧向弹力带走","功能性","臀","弹力带","孤立","半蹲，侧向跨步，膝盖对齐","蚌式开合","加阻力",3,"12-15步/侧",60],
+["蚌式开合","功能性","臀","弹力带","孤立","侧卧，膝盖打开，骨盆不后倒","徒手蚌式","加阻力",3,"15/侧",60],
+["鸟狗","核心","核心","自重","孤立","对侧手脚伸直，骨盆稳定","死虫","加停顿",3,"10/侧",60],
+["死虫","核心","核心","自重","孤立","腰贴地，对侧手脚伸展","鸟狗","加负重",3,"10/侧",60],
+// 体能 / HIIT
+["波比跳","HIIT","全身","自重","复合","下蹲撑地，跳成平板，收腿起跳","简化波比","加次数/负重",4,"30-40s",30],
+["登山跑","HIIT","核心","自重","复合","平板姿势，膝盖交替向胸","慢速登山","加快",4,"30-40s",30],
+["开合跳","HIIT","全身","自重","复合","落地轻，膝盖微屈","原地踏步","加时间",4,"30-40s",30],
+["高抬腿","HIIT","全身","自重","复合","膝盖抬到髋高，摆臂","原地踏步","加快",4,"30-40s",30],
+["跳绳","体能","全身","绳","复合","手腕摇绳，前脚掌落地","无绳跳","加时间/双摇",4,"60-90s",60],
+["划船机间歇","体能","全身","器械","复合","腿-髋-臂顺序发力","单车","加阻力",6,"250m",90],
+["单车冲刺","体能","腿","单车","复合","坐姿稳定，快速蹬踏","快走","加阻力",8,"20s",40],
+["折返跑","HIIT","全身","自重","复合","急停急起，注意脚踝","快步走","加距离",6,"20m",60],
+["爬楼梯","体能","腿","自重","复合","全脚掌踩实，身体略前倾","快走","加层数",4,"3-5min",90],
+["深蹲跳","体能","腿","自重","复合","下蹲后爆发起跳，轻落","自重深蹲","加次数",4,"8-10",90],
+["弓步跳","体能","腿","自重","复合","前后交替跳，落地缓冲","箭步蹲","加次数",4,"10/腿",90],
+// 核心
+["平板支撑","核心","核心","自重","孤立","肘撑地，身体成直线，肋骨下沉","跪姿平板","加时间/负重",3,"30-60s",45],
+["侧平板","核心","核心","自重","孤立","髋抬高，身体成直线","屈膝侧平板","加时间",3,"20-40s/侧",45],
+["卷腹","核心","核心","自重","孤立","下背贴地，肩胛离地","死虫","加负重",3,"12-15",45],
+["反向卷腹","核心","核心","自重","孤立","骨盆后倾，腿向胸","死虫","加次数",3,"12-15",45],
+["悬垂举腿","核心","核心","自重","孤立","骨盆后倾，腿上抬","仰卧举腿","加次数",3,"8-12",60],
+["俄罗斯转体","核心","核心","自重","孤立","转体时胸椎旋转，骨盆稳定","帕洛夫推","加负重",3,"20/侧",45],
+["健腹轮","核心","核心","器械","复合","核心收紧，慢推慢收","平板支撑","加距离",3,"8-12",60]
+].map(a=>({n:a[0],cat:a[1],muscle:a[2],eq:a[3],type:a[4],cue:a[5],reg:a[6],prog:a[7],sets:a[8],reps:a[9],rest:a[10]}));
+const EX_CATS=['全部','力量','肌肥大','功能性','体能','HIIT','核心'];
+const EX_MUSCLES=['全部','胸','背','肩','腿','臀','手臂','核心','全身','小腿'];
+
+const TEMPLATES=[
+{id:'beginner3',name:'新手全身 3 天',level:'入门',desc:'每周 3 练，全身复合动作，适合刚开始力量训练的人',days:[
+ {name:'Day A',focus:'全身',items:[{n:'高脚杯深蹲',sets:3,reps:'8-10',rest:90},{n:'哑铃卧推',sets:3,reps:'8-10',rest:90},{n:'坐姿绳索划船',sets:3,reps:'10-12',rest:90},{n:'罗马尼亚硬拉',sets:3,reps:'10',rest:90},{n:'平板支撑',sets:3,reps:'30-45s',rest:45}]},
+ {name:'Day B',focus:'全身',items:[{n:'腿举',sets:3,reps:'10-12',rest:90},{n:'上斜哑铃卧推',sets:3,reps:'10',rest:90},{n:'高位下拉',sets:3,reps:'10-12',rest:90},{n:'保加利亚分腿蹲',sets:3,reps:'10/腿',rest:90},{n:'侧平板',sets:3,reps:'20-30s/侧',rest:45}]},
+ {name:'Day C',focus:'全身',items:[{n:'臀推',sets:3,reps:'12',rest:90},{n:'哑铃侧平举',sets:3,reps:'12-15',rest:60},{n:'单臂哑铃划船',sets:3,reps:'10/侧',rest:90},{n:'腿弯举',sets:3,reps:'12',rest:60},{n:'死虫',sets:3,reps:'10/侧',rest:45}]}
+]},
+{id:'upperlower4',name:'上下肢 4 天',level:'进阶',desc:'上肢/下肢分化，每周 4 练，兼顾力量与肌肥大',days:[
+ {name:'上肢 A',focus:'胸背肩',items:[{n:'杠铃卧推',sets:4,reps:'6-8',rest:150},{n:'杠铃划船',sets:4,reps:'6-8',rest:150},{n:'站姿推举',sets:3,reps:'8-10',rest:120},{n:'高位下拉',sets:3,reps:'10',rest:90},{n:'哑铃侧平举',sets:3,reps:'12-15',rest:60},{n:'绳索下压',sets:3,reps:'12',rest:60}]},
+ {name:'下肢 A',focus:'腿臀',items:[{n:'杠铃深蹲',sets:4,reps:'6-8',rest:150},{n:'罗马尼亚硬拉',sets:4,reps:'8-10',rest:120},{n:'腿举',sets:3,reps:'10-12',rest:90},{n:'腿弯举',sets:3,reps:'12',rest:60},{n:'提踵',sets:4,reps:'12-15',rest:60},{n:'平板支撑',sets:3,reps:'45s',rest:45}]},
+ {name:'上肢 B',focus:'胸背肩',items:[{n:'上斜哑铃卧推',sets:4,reps:'8-10',rest:120},{n:'单臂哑铃划船',sets:4,reps:'10/侧',rest:90},{n:'面拉',sets:3,reps:'15',rest:60},{n:'哑铃弯举',sets:3,reps:'10-12',rest:60},{n:'窄距卧推',sets:3,reps:'8-10',rest:90}]},
+ {name:'下肢 B',focus:'腿臀',items:[{n:'传统硬拉',sets:4,reps:'5',rest:180},{n:'保加利亚分腿蹲',sets:3,reps:'10/腿',rest:90},{n:'臀推',sets:3,reps:'10-12',rest:90},{n:'腿屈伸',sets:3,reps:'12',rest:60},{n:'侧平板',sets:3,reps:'30s/侧',rest:45}]}
+]},
+{id:'ppl5',name:'推拉腿 5 天',level:'进阶',desc:'推/拉/腿分化，每周 5 练，适合有一定基础的人',days:[
+ {name:'推',focus:'胸肩三头',items:[{n:'杠铃卧推',sets:4,reps:'6-8',rest:150},{n:'上斜哑铃卧推',sets:3,reps:'8-10',rest:90},{n:'站姿推举',sets:3,reps:'8-10',rest:120},{n:'哑铃侧平举',sets:4,reps:'12-15',rest:60},{n:'绳索下压',sets:3,reps:'12',rest:60}]},
+ {name:'拉',focus:'背二头',items:[{n:'传统硬拉',sets:3,reps:'5',rest:180},{n:'引体向上',sets:4,reps:'6-10',rest:120},{n:'杠铃划船',sets:4,reps:'8-10',rest:120},{n:'面拉',sets:3,reps:'15',rest:60},{n:'杠铃弯举',sets:3,reps:'10',rest:60}]},
+ {name:'腿',focus:'腿臀',items:[{n:'杠铃深蹲',sets:4,reps:'6-8',rest:150},{n:'罗马尼亚硬拉',sets:3,reps:'8-10',rest:120},{n:'腿举',sets:3,reps:'12',rest:90},{n:'腿弯举',sets:3,reps:'12',rest:60},{n:'提踵',sets:4,reps:'15',rest:60}]},
+ {name:'上肢',focus:'胸背肩臂',items:[{n:'哑铃卧推',sets:3,reps:'10',rest:90},{n:'高位下拉',sets:3,reps:'10-12',rest:90},{n:'哑铃侧平举',sets:3,reps:'15',rest:60},{n:'锤式弯举',sets:3,reps:'12',rest:60},{n:'绳索下压',sets:3,reps:'12',rest:60}]},
+ {name:'下肢+核心',focus:'腿臀核心',items:[{n:'臀推',sets:4,reps:'10',rest:90},{n:'保加利亚分腿蹲',sets:3,reps:'10/腿',rest:90},{n:'腿屈伸',sets:3,reps:'12',rest:60},{n:'死虫',sets:3,reps:'10/侧',rest:45},{n:'帕洛夫推',sets:3,reps:'10/侧',rest:45}]}
+]},
+{id:'home3',name:'居家哑铃 3 天',level:'入门',desc:'一对哑铃+自重，适合在家训练',days:[
+ {name:'Day A',focus:'全身',items:[{n:'高脚杯深蹲',sets:3,reps:'10-12',rest:90},{n:'哑铃卧推',sets:3,reps:'10-12',rest:90},{n:'单臂哑铃划船',sets:3,reps:'10/侧',rest:90},{n:'罗马尼亚硬拉',sets:3,reps:'10',rest:90},{n:'平板支撑',sets:3,reps:'40s',rest:45}]},
+ {name:'Day B',focus:'全身',items:[{n:'保加利亚分腿蹲',sets:3,reps:'10/腿',rest:90},{n:'站姿推举',sets:3,reps:'10',rest:90},{n:'俯卧撑',sets:3,reps:'8-15',rest:60},{n:'臀桥',sets:3,reps:'15',rest:60},{n:'死虫',sets:3,reps:'10/侧',rest:45}]},
+ {name:'Day C',focus:'全身',items:[{n:'哑铃侧平举',sets:3,reps:'12-15',rest:60},{n:'锤式弯举',sets:3,reps:'12',rest:60},{n:'窄距卧推',sets:3,reps:'8-10',rest:90},{n:'弓步跳',sets:3,reps:'10/腿',rest:90},{n:'侧平板',sets:3,reps:'30s/侧',rest:45}]}
+]},
+{id:'func2',name:'功能性体能 2 天',level:'进阶',desc:'壶铃/药球/负重行走，提升全身协调与体能',days:[
+ {name:'Day A',focus:'全身爆发',items:[{n:'壶铃摇摆',sets:4,reps:'15-20',rest:60},{n:'农夫行走',sets:3,reps:'30-40m',rest:90},{n:'帕洛夫推',sets:3,reps:'10/侧',rest:45},{n:'药球砸地',sets:4,reps:'10-12',rest:60},{n:'熊爬',sets:3,reps:'20-30s',rest:60},{n:'跳箱',sets:3,reps:'6-8',rest:90}]},
+ {name:'Day B',focus:'全身稳定',items:[{n:'土耳其起立',sets:3,reps:'3-5/侧',rest:90},{n:'单腿罗马尼亚硬拉',sets:3,reps:'8-10/侧',rest:60},{n:'战绳',sets:3,reps:'30-40s',rest:60},{n:'台阶上步',sets:3,reps:'10-12/腿',rest:60},{n:'侧向弹力带走',sets:3,reps:'12-15步/侧',rest:45},{n:'鸟狗',sets:3,reps:'10/侧',rest:45}]}
+]},
+{id:'hiit20',name:'HIIT 20 分钟',level:'入门',desc:'热身 5 分钟 + 4 个动作循环 + 冷身 5 分钟',days:[
+ {name:'HIIT',focus:'心肺',items:[{n:'波比跳',sets:4,reps:'30-40s',rest:30},{n:'登山跑',sets:4,reps:'30-40s',rest:30},{n:'深蹲跳',sets:4,reps:'30-40s',rest:30},{n:'开合跳',sets:4,reps:'30-40s',rest:30}]}
+]}
+];
+
+/* ===================== 状态与迁移 ===================== */
+function defaultState(){
+  return {version:2,
+    profile:{sex:'female',age:28,height:160,weight:60,activity:1.55,goal:'lose',rate:0.5,targetWeight:55,targetWaist:75,name:''},
+    settings:{targetKcal:1450,targetProtein:110,targetFat:50,targetCarbs:140,waterTarget:2000,startDate:todayStr()},
+    days:{},customFoods:[],favorites:[],program:{}};
+}
+function migrate(s){
+  if(!s||typeof s!=='object'||!s.days)return null;
+  if(!s.version||s.version<2){
+    s.version=2;
+    if(!s.profile)s.profile={sex:'female',age:28,height:160,weight:60,activity:1.55,goal:'lose',rate:0.5,targetWeight:55,targetWaist:75,name:''};
+    if(!s.settings)s.settings={};
+    if(!s.settings.targetKcal)s.settings.targetKcal=1450;
+    if(!s.settings.targetProtein)s.settings.targetProtein=110;
+    if(!s.settings.targetFat)s.settings.targetFat=Math.round(s.settings.targetKcal*0.28/9);
+    if(!s.settings.targetCarbs)s.settings.targetCarbs=Math.max(50,Math.round((s.settings.targetKcal-s.settings.targetProtein*4-s.settings.targetFat*9)/4));
+    if(!s.settings.waterTarget)s.settings.waterTarget=2000;
+    if(!s.settings.startDate)s.settings.startDate=Object.keys(s.days).sort()[0]||todayStr();
+    if(!s.favorites)s.favorites=[];
+    if(!s.program)s.program={};
+    if(!s.customFoods)s.customFoods=[];
+    if(!s.profile.targetWeight)s.profile.targetWeight=55;
+    if(!s.profile.targetWaist)s.profile.targetWaist=75;
+    const ds=Object.keys(s.days).sort();
+    for(let i=ds.length-1;i>=0;i--){if(typeof s.days[ds[i]].weight==='number'){s.profile.weight=s.days[ds[i]].weight;break;}}
+  }
+  return s;
+}
+function loadState(){
+  try{
+    let raw=localStorage.getItem(KEY);
+    if(!raw)raw=localStorage.getItem('fatloss_workbench_v1');
+    if(!raw)return null;
+    return JSON.parse(raw);
+  }catch(e){return null;}
+}
+const savedState=loadState();
+let S=migrate(savedState)||defaultState();
+const firstRun=!savedState;
+function normalizeState(){
+  if(!S.settings)S.settings=defaultState().settings;
+  if(!S.profile)S.profile=defaultState().profile;
+  if(!S.customFoods)S.customFoods=[];
+  if(!S.favorites)S.favorites=[];
+  if(!S.program)S.program={};
+  Object.keys(S.days||{}).forEach(d=>{
+    const day=S.days[d];
+    if(!day||typeof day!=='object')return;
+    if(!day.meals)day.meals={breakfast:[],lunch:[],dinner:[],snack:[]};
+    MEALS.forEach(m=>{if(!Array.isArray(day.meals[m.id]))day.meals[m.id]=[];});
+    if(!Array.isArray(day.workouts))day.workouts=[];
+  });
+}
+normalizeState();
+let view='today',selDate=todayStr(),chartMetric='weight';
+let picker={meal:null,idx:null,food:null,step:'list',kind:'food',workout:null};
+let hiit={work:20,rest:10,rounds:8,prep:10,phase:'idle',left:0,round:0,running:false,timer:null};
+let restTimer={left:0,running:false,timer:null,total:60};
+
+/* ===================== 工具 ===================== */
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parseDate(s){const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+function addDays(s,n){const d=parseDate(s);d.setDate(d.getDate()+n);return fmtDate(d);}
+function todayStr(){return fmtDate(new Date());}
+function diffDays(a,b){return Math.round((parseDate(b)-parseDate(a))/86400000);}
+function weekdayName(s){return ['周日','周一','周二','周三','周四','周五','周六'][parseDate(s).getDay()];}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(n,d=0){if(n==null||isNaN(n))return '—';return Number(n).toFixed(d);}
+function avg(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:null;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function round1(n){return Math.round(n*10)/10;}
+
+/* ===================== 数据访问 ===================== */
+function emptyDay(){return {weight:null,waist:null,hip:null,thigh:null,arm:null,chest:null,neck:null,sleep:null,steps:null,hunger:null,stress:null,energy:null,water:0,periodStart:false,periodEnd:false,training:'',meals:{breakfast:[],lunch:[],dinner:[],snack:[]},workouts:[],note:'',photo:false};}
+function getDay(d){return S.days[d]||emptyDay();}
+function dayRef(d){
+  if(!S.days[d])S.days[d]=emptyDay();
+  const day=S.days[d];
+  if(!day.meals)day.meals={breakfast:[],lunch:[],dinner:[],snack:[]};
+  MEALS.forEach(m=>{if(!Array.isArray(day.meals[m.id]))day.meals[m.id]=[];});
+  if(!Array.isArray(day.workouts))day.workouts=[];
+  return day;
+}
+function hasData(day){if(!day)return false;const t=dayTotals(day);return t.k>0||day.weight!=null||day.waist!=null||(day.workouts&&day.workouts.length>0);}
+function allFoods(){return FOOD_DB.concat(S.customFoods||[]);}
+function foodByName(n){return allFoods().find(f=>f.n===n);}
+function itemMacros(it){const f=foodByName(it.n);const g=Number(it.g)||0;if(!f)return {k:0,p:0,f:0,c:0};const r=g/100;return {k:f.k*r,p:f.p*r,f:f.f*r,c:f.c*r};}
+function mealTotals(items){return (items||[]).reduce((a,it)=>{const m=itemMacros(it);a.k+=m.k;a.p+=m.p;a.f+=m.f;a.c+=m.c;return a;},{k:0,p:0,f:0,c:0});}
+function dayTotals(day){const t={k:0,p:0,f:0,c:0};MEALS.forEach(m=>{const x=mealTotals(day.meals&&day.meals[m.id]);t.k+=x.k;t.p+=x.p;t.f+=x.f;t.c+=x.c;});return t;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));showSave();}catch(e){toast('保存失败：浏览器禁用了本地存储');}}
+let saveTimer=null;
+function showSave(){const el=document.getElementById('saveDot');if(!el)return;el.textContent='✓ 已保存';el.style.color='#2E7D5B';clearTimeout(saveTimer);saveTimer=setTimeout(()=>{el.style.color='#6B7280';},1200);}
+function toast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),1800);}
+
+/* ===================== 代谢计算 ===================== */
+function bmi(){const p=S.profile;return p.height?p.weight/Math.pow(p.height/100,2):null;}
+function bmrMifflin(){const p=S.profile;const b=10*p.weight+6.25*p.height-5*p.age;return p.sex==='male'?b+5:b-161;}
+function bodyFatNavy(date){
+  const d=getDay(date||selDate),p=S.profile,w=d.waist,n=d.neck,h=d.hip;
+  if(!w||!n)return null;
+  if(p.sex==='female'){
+    if(!h)return null;
+    const v=1.29579-0.35004*Math.log10(w+h-n)+0.22100*Math.log10(p.height);
+    return clamp(495/v-450,3,60);
+  }
+  const v=1.0324-0.19077*Math.log10(w-n)+0.15456*Math.log10(p.height);
+  return clamp(495/v-450,3,60);
+}
+function bodyFatBMI(){const b=bmi(),p=S.profile;return b?1.2*b+0.23*p.age-10.8*(p.sex==='male'?1:0)-5.4:null;}
+function latestBodyFat(){
+  const ds=Object.keys(S.days).sort();
+  for(let i=ds.length-1;i>=0;i--){
+    const d=S.days[ds[i]];
+    if(d&&d.waist&&d.neck&&(S.profile.sex!=='female'||d.hip))return bodyFatNavy(ds[i]);
+  }
+  return null;
+}
+function bmrKatch(){const bf=latestBodyFat();if(bf==null)return null;const lbm=S.profile.weight*(1-bf/100);return 370+21.6*lbm;}
+function tdeeFormula(){return bmrMifflin()*S.profile.activity;}
+function formulaTarget(){
+  const p=S.profile,tdef=tdeeFormula();
+  let adj=0;
+  if(p.goal==='lose')adj=-p.rate*7700/7;
+  else if(p.goal==='gain')adj=p.rate*7700/7;
+  let kcal=Math.max(p.sex==='male'?1500:1200,Math.round(tdef+adj));
+  const protein=Math.round(p.weight*(p.goal==='lose'?1.8:1.6));
+  const fat=Math.max(Math.round(p.weight*0.8),Math.round(kcal*0.25/9));
+  const carbs=Math.max(50,Math.round((kcal-protein*4-fat*9)/4));
+  return {kcal,protein,fat,carbs,tdee:Math.round(tdef),bmr:Math.round(bmrMifflin()),adj:Math.round(adj)};
+}
+function bodyFatLabel(bf,sex){
+  if(bf==null)return '';
+  if(sex==='male'){if(bf<6)return '偏低';if(bf<14)return '运动员';if(bf<18)return '健身';if(bf<25)return '平均';return '偏高';}
+  if(bf<14)return '偏低';if(bf<21)return '运动员';if(bf<25)return '健身';if(bf<32)return '平均';return '偏高';
+}
+
+/* ===================== 月经周期 ===================== */
+function periodStarts(){return Object.keys(S.days).filter(d=>S.days[d]&&S.days[d].periodStart).sort();}
+function cycleInfo(date){
+  const p=S.profile;
+  if(p.sex!=='female')return null;
+  const starts=periodStarts().filter(d=>d<=date);
+  if(!starts.length)return null;
+  const last=starts[starts.length-1];
+  const day=diffDays(last,date)+1;
+  const intervals=[];
+  for(let i=1;i<starts.length;i++)intervals.push(diffDays(starts[i-1],starts[i]));
+  const avgLen=intervals.length?Math.round(avg(intervals)):28;
+  const phase=day<=5?'月经期':day<=13?'卵泡期':day<=16?'排卵期':'黄体期';
+  return {day,phase,avgLen,next:addDays(last,avgLen),last,count:starts.length};
+}
+
+/* ===================== 体重与周汇总 ===================== */
+function avgWeight(endDate,n=7){const arr=[];for(let i=0;i<n;i++){const d=addDays(endDate,-i);const day=S.days[d];if(day&&typeof day.weight==='number'&&day.weight>0)arr.push(day.weight);}return arr.length>=3?avg(arr):null;}
+function weightChange(endDate){const now=avgWeight(endDate,7),prev=avgWeight(addDays(endDate,-7),7);if(now==null||prev==null)return null;return now-prev;}
+function weekStart(s){const d=parseDate(s);const wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd);return fmtDate(d);}
+function weeklyStats(){
+  const logged=Object.keys(S.days).filter(d=>hasData(S.days[d])).sort();
+  let start=S.settings.startDate||todayStr();
+  if(logged.length&&logged[0]<start)start=logged[0];
+  const out=[];let ws=weekStart(start);
+  if(parseDate(ws)>parseDate(selDate))return out;
+  while(parseDate(ws)<=parseDate(selDate)){
+    const dates=[...Array(7)].map((_,i)=>addDays(ws,i));
+    const days=dates.map(d=>S.days[d]).filter(Boolean);
+    const w=days.map(d=>d.weight).filter(v=>typeof v==='number');
+    const k=days.map(d=>dayTotals(d).k).filter(v=>v>0);
+    const pr=days.map(d=>dayTotals(d).p).filter(v=>v>0);
+    const wa=days.map(d=>d.waist).filter(v=>typeof v==='number');
+    const st=days.map(d=>d.steps).filter(v=>typeof v==='number'&&v>0);
+    const sl=days.map(d=>d.sleep).filter(v=>typeof v==='number'&&v>0);
+    const tr=days.filter(d=>d.training&&d.training!=='休息').length;
+    out.push({start:ws,avgW:avg(w),avgK:avg(k),avgP:avg(pr),waist:avg(wa),steps:avg(st),sleep:avg(sl),train:tr});
+    ws=addDays(ws,7);
+  }
+  for(let i=0;i<out.length;i++){
+    const w=out[i],prev=i>0?out[i-1]:null;
+    if(prev&&w.avgW!=null&&prev.avgW!=null&&w.avgK!=null){
+      w.tdee=w.avgK-(w.avgW-prev.avgW)*7700/7;
+      w.sug=Math.max(1250,Math.round(w.tdee-325));
+    }
+  }
+  return out;
+}
+function volumeWeek(){
+  const ws=weekStart(selDate),map={};
+  for(let i=0;i<7;i++){
+    const day=S.days[addDays(ws,i)];
+    if(!day)continue;
+    (day.workouts||[]).forEach(w=>{
+      if(w.kind==='cardio')return;
+      const m=w.muscle||'全身';
+      map[m]=(map[m]||0)+(Number(w.sets)||0);
+    });
+  }
+  return map;
+}
+
+/* ===================== 图表 ===================== */
+function svgChart(dates,series){
+  const W=340,H=180,pl=38,pr=8,pt=14,pb=26;
+  const vals=series.flatMap(s=>s.values).filter(v=>typeof v==='number');
+  if(!vals.length)return '<div class="empty">还没有数据，先去记录吧</div>';
+  let min=Math.min(...vals),max=Math.max(...vals);
+  if(max-min<0.8){const c=(max+min)/2;min=c-0.5;max=c+0.5;}
+  const pad=(max-min)*0.18;min-=pad;max+=pad;
+  const x=i=>dates.length<=1?pl+(W-pl-pr)/2:pl+(W-pl-pr)*i/(dates.length-1);
+  const y=v=>pt+(H-pt-pb)*(1-(v-min)/(max-min));
+  let grid='';
+  for(let k=0;k<=3;k++){
+    const yy=pt+(H-pt-pb)*k/3,val=max-(max-min)*k/3;
+    grid+=`<line x1="${pl}" y1="${yy}" x2="${W-pr}" y2="${yy}" stroke="#E9EDF0"/>`;
+    grid+=`<text x="${pl-5}" y="${yy+3}" text-anchor="end" font-size="9" fill="#9CA3AF">${val.toFixed(1)}</text>`;
+  }
+  const tickIdx=[0,Math.floor((dates.length-1)/2),dates.length-1].filter((v,i,a)=>a.indexOf(v)===i);
+  let xl='';
+  tickIdx.forEach(i=>{
+    let anchor='middle',xx=x(i);
+    if(dates.length>1&&i===0){anchor='start';xx=pl;}
+    if(dates.length>1&&i===dates.length-1){anchor='end';xx=W-pr;}
+    xl+=`<text x="${xx}" y="${H-8}" text-anchor="${anchor}" font-size="9" fill="#9CA3AF">${dates[i].slice(5)}</text>`;
+  });
+  let paths='';
+  series.forEach(s=>{
+    let d='',started=false;
+    s.values.forEach((v,i)=>{
+      if(typeof v!=='number'){started=false;return;}
+      d+=(started?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)+' ';
+      started=true;
+    });
+    if(d){
+      paths+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.width||2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+      if(s.dots)s.values.forEach((v,i)=>{if(typeof v==='number')paths+=`<circle cx="${x(i)}" cy="${y(v)}" r="2.3" fill="${s.color}"/>`;});
+    }
+  });
+  const legend=series.map(s=>`<span class="lg"><i style="background:${s.color}"></i>${s.name}</span>`).join('');
+  return `<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" width="100%">${grid}${xl}${paths}</svg><div class="legend">${legend}</div></div>`;
+}
+
+/* ===================== 导航 ===================== */
+function setView(v){view=v;closeSheet();document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));render();window.scrollTo(0,0);}
+function shiftDate(n){selDate=addDays(selDate,n);render();}
+function pickDate(v){if(v){selDate=v;render();}}
+function openDatePicker(){const el=document.getElementById('dateInput');el.value=selDate;if(el.showPicker){try{el.showPicker();return;}catch(e){}}el.click();}
+function updateDateBar(){
+  const el=document.getElementById('dateLabel');
+  if(!el)return;
+  const d=parseDate(selDate);
+  el.textContent=(selDate===todayStr()?'今天 · ':'')+(d.getMonth()+1)+'月'+d.getDate()+'日 '+weekdayName(selDate);
+  document.getElementById('dateInput').value=selDate;
+}
+function render(){
+  updateDateBar();
+  document.getElementById('datebar').style.display=view==='me'?'none':'flex';
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.dataset.v===view));
+  const v=document.getElementById('view');
+  if(view==='today')v.innerHTML=vToday();
+  else if(view==='diet')v.innerHTML=vDiet();
+  else if(view==='train')v.innerHTML=vTrain();
+  else if(view==='body')v.innerHTML=vBody();
+  else v.innerHTML=vMe();
+}
+function setField(k,v){const day=dayRef(selDate);if(v===''||v==null)day[k]=null;else day[k]=Number(v);if(k==='weight')syncProfileWeight();save();render();}
+function syncProfileWeight(){
+  const ds=Object.keys(S.days).sort();
+  for(let i=ds.length-1;i>=0;i--){const w=S.days[ds[i]].weight;if(typeof w==='number'&&w>0){S.profile.weight=w;return;}}
+}
+function setText(k,v){const day=dayRef(selDate);day[k]=v||'';save();render();}
+function addWater(ml){const day=dayRef(selDate);day.water=Math.max(0,(Number(day.water)||0)+ml);save();render();}
+function togglePeriod(){const day=dayRef(selDate);day.periodStart=!day.periodStart;save();render();}
+function setChartMetric(m){chartMetric=m;save();render();}
+function goalEta(){
+  const cur=avgWeight(selDate,7)||S.profile.weight,target=S.profile.targetWeight||55;
+  const ch=weightChange(selDate);
+  if(ch==null||ch>=0||cur<=target)return null;
+  const weeks=(cur-target)/(-ch);
+  return weeks>0&&weeks<130?Math.round(weeks):null;
+}
+
+/* ===================== 今日 ===================== */
+function vToday(){
+  const p=S.profile,day=getDay(selDate),t=dayTotals(day);
+  const target=S.settings.targetKcal||1450;
+  const pct=Math.min(100,Math.round(t.k/target*100));
+  const diff=Math.round(t.k-target);
+  const over=t.k>0?(diff>0?`<div class="small" style="color:var(--warn)">超出目标 ${diff} kcal</div>`:`<div class="small">还可吃 ${-diff} kcal</div>`):'';
+  const avg7=avgWeight(selDate,7),ch=weightChange(selDate);
+  const incomplete=!p.age||!p.height||!p.weight;
+  const ci=cycleInfo(selDate);
+  const water=Number(day.water)||0;
+  const wtarget=S.settings.waterTarget||2000;
+  const wpct=Math.min(100,Math.round(water/wtarget*100));
+  return `
+  ${incomplete?`<div class="notice">先到「我的」完善性别/年龄/身高/体重，代谢和目标会更准。</div>`:''}
+  <div class="card">
+    <h3>体重 <span class="sub">晨起排便后裸称</span></h3>
+    <div class="row" style="align-items:flex-end">
+      <div class="field" style="flex:1.2"><input class="big-input" type="number" inputmode="decimal" step="0.1" placeholder="60.0" value="${day.weight!=null?day.weight:''}" onchange="setField('weight',this.value)"></div>
+      <div style="flex:1;padding-bottom:10px">
+        <div class="muted">7 日均重</div>
+        <div class="big" style="font-size:22px">${avg7!=null?avg7.toFixed(2):'—'}<span class="unit">kg</span></div>
+        <div style="margin-top:4px;font-size:12px">${ch==null?'<span class="muted">记录满 2 周后显示周变化</span>':`<span class="${ch<0?'trend-down':'trend-up'}">${ch>0?'+':''}${ch.toFixed(2)} kg / 7天</span>`}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>今日摄入 <span class="sub">目标 ${target} kcal</span></h3>
+    <div class="big">${Math.round(t.k)}<span class="unit">/ ${target} kcal</span></div>
+    <div class="progress"><i class="${pct>=100?'over':''}" style="width:${pct}%"></i></div>
+    ${over}
+    <div class="macro-row">
+      <div class="macro"><b>${Math.round(t.p)}g</b><span>蛋白 / 目标 ${S.settings.targetProtein||110}g</span></div>
+      <div class="macro"><b>${Math.round(t.f)}g</b><span>脂肪 / 目标 ${S.settings.targetFat||50}g</span></div>
+      <div class="macro"><b>${Math.round(t.c)}g</b><span>碳水 / 目标 ${S.settings.targetCarbs||140}g</span></div>
+    </div>
+    <div style="margin-top:12px"><button class="btn soft" onclick="setView('diet')">去记录饮食 ›</button></div>
+  </div>
+
+  <div class="card">
+    <h3>饮水 <span class="sub">${water} / ${wtarget} ml</span></h3>
+    <div class="progress"><i style="width:${wpct}%"></i></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn ghost sm" style="flex:1" onclick="addWater(250)">+250</button>
+      <button class="btn ghost sm" style="flex:1" onclick="addWater(500)">+500</button>
+      <button class="btn ghost sm" style="flex:1" onclick="addWater(-250)">−250</button>
+    </div>
+  </div>
+
+  ${ci?`<div class="card">
+    <h3>月经周期 <span class="sub">第 ${ci.day} 天</span></h3>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span class="badge ${ci.phase==='月经期'?'red':ci.phase==='排卵期'?'orange':'blue'}">${ci.phase}</span>
+      <span class="muted">平均周期 ${ci.avgLen} 天 · 预计下次 ${ci.next.slice(5)}</span>
+    </div>
+    <div class="small" style="margin-top:6px">黄体期常见水潴留 0.5–2kg，体重和上一周期同一相位比较更准。</div>
+    <button class="add-line" onclick="togglePeriod()">${day.periodStart?'取消今天的「月经开始」标记':'标记今天为月经第 1 天'}</button>
+  </div>`:''}
+
+  <div class="card">
+    <h3>今日训练 <span class="sub">${(day.workouts||[]).length} 条</span></h3>
+    ${(day.workouts||[]).length?day.workouts.map((w,i)=>`
+      <div class="food-item">
+        <div><div class="food-name">${w.kind==='cardio'?'🏃 ':'🏋️ '}${esc(w.name)}</div>
+        <div class="food-meta">${w.kind==='cardio'?`${w.duration||0} 分钟${w.incline?` · 坡度 ${w.incline}`:''}${w.speed?` · 速度 ${w.speed}`:''}`:`${w.sets||0} 组 × ${w.reps||0} 次 · ${w.weight||0}kg · RPE ${w.rpe||'-'}`}</div></div>
+        <button class="icon-btn" onclick="delWorkoutById('${w.id}')">✕</button>
+      </div>`).join(''):'<div class="empty">今天还没记录训练</div>'}
+    <button class="add-line" onclick="openWorkoutSheet('strength')">＋ 添加力量训练</button>
+    <button class="add-line" onclick="openWorkoutSheet('cardio')">＋ 添加有氧</button>
+  </div>
+
+  <div class="card">
+    <h3>状态</h3>
+    <div class="row">
+      <div class="field"><label>睡眠 h</label><input type="number" inputmode="decimal" step="0.1" value="${day.sleep!=null?day.sleep:''}" onchange="setField('sleep',this.value)"></div>
+      <div class="field"><label>步数</label><input type="number" inputmode="numeric" value="${day.steps!=null?day.steps:''}" onchange="setField('steps',this.value)"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>饥饿感 1-5</label><input type="number" inputmode="numeric" min="1" max="5" value="${day.hunger!=null?day.hunger:''}" onchange="setField('hunger',this.value)"></div>
+      <div class="field"><label>压力 1-5</label><input type="number" inputmode="numeric" min="1" max="5" value="${day.stress!=null?day.stress:''}" onchange="setField('stress',this.value)"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>精力 1-5</label><input type="number" inputmode="numeric" min="1" max="5" value="${day.energy!=null?day.energy:''}" onchange="setField('energy',this.value)"></div>
+      <div class="field"><label>训练</label><select onchange="setText('training',this.value)">${['','力量','有氧','力量+有氧','休息'].map(x=>`<option value="${x}" ${day.training===x?'selected':''}>${x||'未选择'}</option>`).join('')}</select></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>今天拍照打卡</label><select onchange="setText('photo',this.value)"><option value="">未拍</option><option value="1" ${day.photo?'selected':''}>已拍</option></select></div>
+      <div class="field"><label>备注</label><input value="${esc(day.note||'')}" onchange="setText('note',this.value)" placeholder="疼痛/外食/情绪…"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>目标进度</h3>
+    <div class="kpis">
+      <div class="kpi"><b>${avg7!=null?avg7.toFixed(1):fmt(p.weight,1)} kg</b><span>当前 7 日均重</span></div>
+      <div class="kpi"><b>${p.targetWeight} kg</b><span>目标体重</span></div>
+      <div class="kpi"><b>${day.waist!=null?day.waist:'—'} cm</b><span>当前腰围</span></div>
+      <div class="kpi"><b>${p.targetWaist} cm</b><span>目标腰围</span></div>
+    </div>
+    <div class="small" style="margin-top:8px">${goalEta()!=null?`按最近 7 天速度，约 ${goalEta()} 周接近目标（估算，会随执行变化）。`:'记录满 2 周后显示预计时间。'}</div>
+  </div>`;
+}
+
+/* ===================== 饮食 ===================== */
+function vDiet(){
+  const day=getDay(selDate),t=dayTotals(day),target=S.settings.targetKcal||1450;
+  const pct=Math.min(100,Math.round(t.k/target*100));
+  const diff=Math.round(t.k-target);
+  const over=t.k>0?(diff>0?`<div class="small" style="color:var(--warn)">超出目标 ${diff} kcal</div>`:`<div class="small">还可吃 ${-diff} kcal</div>`):'';
+  const favs=(S.favorites||[]).slice(0,6);
+  return `
+  <div class="card">
+    <h3>今日合计 <span class="sub">${selDate===todayStr()?'今天':selDate}</span></h3>
+    <div class="big">${Math.round(t.k)}<span class="unit">/ ${target} kcal</span></div>
+    <div class="progress"><i class="${pct>=100?'over':''}" style="width:${pct}%"></i></div>
+    ${over}
+    <div class="macro-row">
+      <div class="macro"><b>${Math.round(t.p)}g</b><span>蛋白 / ${S.settings.targetProtein||110}g</span></div>
+      <div class="macro"><b>${Math.round(t.f)}g</b><span>脂肪 / ${S.settings.targetFat||50}g</span></div>
+      <div class="macro"><b>${Math.round(t.c)}g</b><span>碳水 / ${S.settings.targetCarbs||140}g</span></div>
+    </div>
+  </div>
+  ${favs.length?`<div class="card"><h3>常用食物 <span class="sub">点一下快速添加</span></h3><div class="chips">${favs.map(n=>`<button class="chip" onclick="quickAdd('${esc(n)}')">${esc(n)}</button>`).join('')}</div></div>`:''}
+  ${MEALS.map(m=>{
+    const items=(day.meals&&day.meals[m.id])||[];
+    const mt=mealTotals(items);
+    return `<div class="meal">
+      <div class="meal-head"><div class="meal-title">${m.icon} ${m.name}</div><div class="meal-kcal">${Math.round(mt.k)} kcal · 蛋白 ${Math.round(mt.p)}g</div></div>
+      ${items.length?items.map((it,i)=>`
+        <div class="food-item" onclick="openItemSheet('${m.id}',${i})">
+          <div><div class="food-name">${esc(it.n)}</div><div class="food-meta">${it.g}g · ${Math.round(itemMacros(it).k)} kcal · 蛋白 ${itemMacros(it).p.toFixed(1)}g</div></div>
+          <button class="icon-btn" onclick="event.stopPropagation();delItem('${m.id}',${i})">✕</button>
+        </div>`).join(''):'<div class="empty">还没有记录</div>'}
+      <button class="add-line" onclick="openFoodPicker('${m.id}')">＋ 添加食物</button>
+    </div>`;
+  }).join('')}
+  <div class="card">
+    <button class="btn ghost" onclick="copyYesterday()">↩︎ 复制昨天的饮食</button>
+    <div class="small" style="text-align:center;margin-top:8px">点已添加的食物可以改克数或删除；油也要记（1 平茶匙 ≈ 5g）</div>
+  </div>`;
+}
+
+/* ===================== 身体 ===================== */
+function vBody(){
+  const day=getDay(selDate),p=S.profile;
+  const bfN=bodyFatNavy(selDate),bfB=bodyFatBMI();
+  const b=bmi();
+  const whtr=day.waist&&p.height?day.waist/p.height:null;
+  const whr=day.waist&&day.hip?day.waist/day.hip:null;
+  const ci=cycleInfo(selDate);
+  const starts=periodStarts().slice(-4).reverse();
+  const dates=[...Array(30)].map((_,i)=>addDays(selDate,-29+i));
+  let series=[];
+  if(chartMetric==='weight'){
+    series=[
+      {name:'每日体重',values:dates.map(d=>{const x=S.days[d];return x&&typeof x.weight==='number'?x.weight:null;}),color:'#9CC7CC',width:1.5,dots:true},
+      {name:'7日均重',values:dates.map(d=>avgWeight(d,7)),color:'#0E6E7A',width:2.5}
+    ];
+  }else if(chartMetric==='bodyfat'){
+    series=[{name:'体脂率（Navy 估算）',values:dates.map(d=>bodyFatNavy(d)),color:'#C0662A',width:2.5,dots:true}];
+  }else{
+    const key=chartMetric,colors={waist:'#C0662A',hip:'#6B4C8A',thigh:'#0E6E7A',arm:'#2E7D5B',chest:'#1F3A4D'};
+    series=[{name:{waist:'腰围',hip:'臀围',thigh:'大腿',arm:'上臂',chest:'胸围'}[key],values:dates.map(d=>{const x=S.days[d];return x&&typeof x[key]==='number'?x[key]:null;}),color:colors[key]||'#0E6E7A',width:2.5,dots:true}];
+  }
+  const chart=svgChart(dates,series);
+  const weeks=weeklyStats().slice(-8);
+  const vol=volumeWeek();
+  const volKeys=['胸','背','肩','腿','臀','手臂','核心','全身'];
+  return `
+  <div class="card">
+    <h3>围度 <span class="sub">每周固定一天测</span></h3>
+    <div class="row">
+      <div class="field"><label>腰围 cm</label><input type="number" inputmode="decimal" step="0.1" value="${day.waist!=null?day.waist:''}" onchange="setField('waist',this.value)"></div>
+      <div class="field"><label>臀围 cm</label><input type="number" inputmode="decimal" step="0.1" value="${day.hip!=null?day.hip:''}" onchange="setField('hip',this.value)"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>大腿 cm</label><input type="number" inputmode="decimal" step="0.1" value="${day.thigh!=null?day.thigh:''}" onchange="setField('thigh',this.value)"></div>
+      <div class="field"><label>上臂 cm</label><input type="number" inputmode="decimal" step="0.1" value="${day.arm!=null?day.arm:''}" onchange="setField('arm',this.value)"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>胸围 cm</label><input type="number" inputmode="decimal" step="0.1" value="${day.chest!=null?day.chest:''}" onchange="setField('chest',this.value)"></div>
+      <div class="field"><label>颈围 cm</label><input type="number" inputmode="decimal" step="0.1" value="${day.neck!=null?day.neck:''}" onchange="setField('neck',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>体成分估算 <span class="sub">仅供参考</span></h3>
+    <div class="kpis">
+      <div class="kpi"><b>${b!=null?b.toFixed(1):'—'}</b><span>BMI ${b!=null?(b<18.5?'偏低':b<24?'正常':b<28?'超重':'肥胖'):''}</span></div>
+      <div class="kpi"><b>${bfN!=null?bfN.toFixed(1)+'%':'—'}</b><span>体脂（Navy）${bodyFatLabel(bfN,p.sex)}</span></div>
+      <div class="kpi"><b>${bfB!=null?bfB.toFixed(1)+'%':'—'}</b><span>体脂（BMI 估算）</span></div>
+      <div class="kpi"><b>${whtr!=null?whtr.toFixed(2):'—'}</b><span>腰高比 ${whtr!=null?(whtr<0.5?'正常':whtr<0.6?'偏高':'高'):''}</span></div>
+    </div>
+    <div class="small" style="margin-top:8px">腰臀比 ${whr!=null?whr.toFixed(2):'—'}。Navy 公式需要腰围+颈围（女性+臀围）；BMI 估算不需要围度。两者都是估算，DEXA/InBody 更准。</div>
+  </div>
+
+  <div class="card">
+    <h3>月经周期 <span class="sub">${p.sex==='female'?'':'仅女性'}</span></h3>
+    ${p.sex==='female'?`
+      ${ci?`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span class="badge ${ci.phase==='月经期'?'red':ci.phase==='排卵期'?'orange':'blue'}">${ci.phase}</span>
+        <span class="muted">周期第 ${ci.day} 天 · 平均 ${ci.avgLen} 天 · 预计下次 ${ci.next.slice(5)}</span>
+      </div>`:'<div class="empty">还没有记录月经开始日</div>'}
+      <button class="btn ghost" onclick="togglePeriod()">${day.periodStart?'取消今天的「月经开始」标记':'标记今天为月经第 1 天'}</button>
+      ${starts.length?`<div class="small" style="margin-top:8px">最近记录：${starts.map(d=>d.slice(5)).join('、')}</div>`:''}
+    `:'<div class="help">男性不显示周期；黄体期水潴留的知识同样适用于女性用户。</div>'}
+  </div>
+
+  <div class="card">
+    <h3>趋势图 <span class="sub">近 30 天</span></h3>
+    <div class="tabs2">
+      ${[['weight','体重'],['waist','腰围'],['hip','臀围'],['thigh','大腿'],['arm','上臂'],['chest','胸围'],['bodyfat','体脂']].map(x=>`<button class="${chartMetric===x[0]?'on':''}" onclick="setChartMetric('${x[0]}')">${x[1]}</button>`).join('')}
+    </div>
+    ${chart}
+  </div>
+
+  <div class="card">
+    <h3>本周训练量 <span class="sub">目标 10–20 组/肌群</span></h3>
+    ${volKeys.filter(k=>vol[k]).length?volKeys.filter(k=>vol[k]).map(k=>{
+      const v=vol[k],pct=Math.min(100,Math.round(v/20*100));
+      return `<div class="bar-row"><span class="lbl">${k}</span><div class="bar"><i style="width:${pct}%"></i></div><span class="small">${v} 组</span></div>`;
+    }).join(''):'<div class="empty">本周还没有力量训练记录</div>'}
+  </div>
+
+  <div class="card">
+    <h3>每周复盘</h3>
+    <div style="overflow:auto"><table><thead><tr><th>周</th><th>7日均重</th><th>周变化</th><th>平均摄入</th><th>蛋白</th><th>训练</th><th>推算TDEE</th><th>建议</th></tr></thead><tbody>
+    ${weeks.length?weeks.map((w,i)=>{
+      const prev=i>0?weeks[i-1]:null;let ch='—';
+      if(w.avgW!=null&&prev&&prev.avgW!=null){const d=w.avgW-prev.avgW;ch=`<span class="${d<0?'trend-down':'trend-up'}">${d>0?'+':''}${d.toFixed(1)}</span>`;}
+      return `<tr><td>${w.start.slice(5)}</td><td>${w.avgW!=null?w.avgW.toFixed(2):'—'}</td><td>${ch}</td><td>${w.avgK!=null?Math.round(w.avgK):'—'}</td><td>${w.avgP!=null?Math.round(w.avgP):'—'}</td><td>${w.train}</td><td>${w.tdee!=null?Math.round(w.tdee):'—'}</td><td>${w.sug!=null?w.sug:'—'}</td></tr>`;
+    }).join(''):'<tr><td colspan="8" class="empty">还没有足够数据</td></tr>'}
+    </tbody></table></div>
+    ${plateauHtml()}
+  </div>`;
+}
+function plateauHtml(){
+  const ws=weeklyStats().filter(w=>w.avgW!=null);
+  if(ws.length<3)return '<div class="small" style="margin-top:8px">连续记录 3 周后，这里会提示是否进入平台期。</div>';
+  const a=ws[ws.length-3],b=ws[ws.length-1];
+  const dw=b.avgW-a.avgW,dwa=(b.waist!=null&&a.waist!=null)?b.waist-a.waist:null;
+  if(Math.abs(dw)<0.25&&(dwa==null||Math.abs(dwa)<0.5)){
+    return '<div class="notice" style="margin-top:8px">最近 3 周体重和腰围变化很小：先检查睡眠、月经、钠、便秘和饮食记录准确性；确认无误后，再考虑每天加 2000 步，或安排 10–14 天饮食休息（吃到 TDEE），最后才减 100–150 kcal。</div>';
+  }
+  return '<div class="small" style="margin-top:8px">最近 3 周体重变化 '+dw.toFixed(1)+' kg，腰围'+(dwa!=null?(dwa>0?'+':'')+dwa.toFixed(1)+' cm':'—')+'。</div>';
+}
+
+/* ===================== 训练 ===================== */
+function vTrain(){
+  const day=getDay(selDate),ws=day.workouts||[];
+  const strength=ws.filter(w=>w.kind!=='cardio'),cardio=ws.filter(w=>w.kind==='cardio');
+  const vol=volumeWeek();
+  const volKeys=['胸','背','肩','腿','臀','手臂','核心','全身'];
+  return `
+  <div class="card">
+    <h3>力量训练 <span class="sub">${strength.length} 个动作</span></h3>
+    ${strength.length?strength.map(w=>`<div class="food-item">
+      <div><div class="food-name">${esc(w.name)}</div><div class="food-meta">${w.sets||0} 组 × ${w.reps||0} 次 · ${w.weight||0} kg · RPE ${w.rpe||'-'}${w.muscle?` · ${w.muscle}`:''}</div></div>
+      <button class="icon-btn" onclick="delWorkoutById('${w.id}')">✕</button>
+    </div>`).join(''):'<div class="empty">今天还没记录力量训练</div>'}
+    <button class="add-line" onclick="openWorkoutSheet('strength')">＋ 添加动作</button>
+    <button class="add-line" onclick="openExercisePicker()">🔍 从动作库选择</button>
+  </div>
+  <div class="card">
+    <h3>有氧 <span class="sub">${cardio.length} 条</span></h3>
+    ${cardio.length?cardio.map(w=>`<div class="food-item">
+      <div><div class="food-name">${esc(w.name)}</div><div class="food-meta">${w.duration||0} 分钟${w.incline?` · 坡度 ${w.incline}`:''}${w.speed?` · 速度 ${w.speed}`:''}</div></div>
+      <button class="icon-btn" onclick="delWorkoutById('${w.id}')">✕</button>
+    </div>`).join(''):'<div class="empty">今天还没记录有氧</div>'}
+    <button class="add-line" onclick="openWorkoutSheet('cardio')">＋ 添加有氧</button>
+  </div>
+  <div class="card">
+    <h3>本周训练量 <span class="sub">目标 10–20 组/肌群</span></h3>
+    ${volKeys.filter(k=>vol[k]).length?volKeys.filter(k=>vol[k]).map(k=>{
+      const v=vol[k],pct=Math.min(100,Math.round(v/20*100));
+      return `<div class="bar-row"><span class="lbl">${k}</span><div class="bar"><i style="width:${pct}%"></i></div><span class="small">${v} 组</span></div>`;
+    }).join(''):'<div class="empty">本周还没有力量训练记录</div>'}
+  </div>
+  <div class="card">
+    <button class="btn soft" onclick="openTemplates()">📋 训练模板（新手/上下肢/推拉腿/居家/功能性/HIIT）</button>
+    <div style="height:8px"></div>
+    <div class="row">
+      <button class="btn ghost" style="flex:1" onclick="openTimer('hiit')">⏱ HIIT 计时</button>
+      <button class="btn ghost" style="flex:1" onclick="openTimer('rest')">⏲ 休息计时</button>
+    </div>
+  </div>
+  <div class="card"><div class="help"><b>训练原则：</b>复合动作优先；每组留 1–2 次余力（RIR 1–2）；做到次数上限再加重量；每 6–8 周安排 1 周减量。有氧 2 次 LISS + 1 次间歇即可，别用有氧代替力量训练。</div></div>`;
+}
+
+/* ===================== 我的 ===================== */
+function vMe(){
+  const p=S.profile,f=formulaTarget(),bmr=Math.round(bmrMifflin()),bmk=bmrKatch(),tdee=Math.round(tdeeFormula());
+  const days=Object.keys(S.days).filter(d=>hasData(S.days[d])).length;
+  return `
+  <div class="card">
+    <h3>个人资料</h3>
+    <div class="row">
+      <div class="field"><label>性别</label><select onchange="setProfile('sex',this.value)"><option value="female" ${p.sex==='female'?'selected':''}>女</option><option value="male" ${p.sex==='male'?'selected':''}>男</option></select></div>
+      <div class="field"><label>年龄</label><input type="number" inputmode="numeric" value="${p.age}" onchange="setProfile('age',this.value)"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>身高 cm</label><input type="number" inputmode="decimal" value="${p.height}" onchange="setProfile('height',this.value)"></div>
+      <div class="field"><label>体重 kg</label><input type="number" inputmode="decimal" step="0.1" value="${p.weight}" onchange="setProfile('weight',this.value)"></div>
+    </div>
+    <div class="field" style="margin-top:10px"><label>活动水平</label><select onchange="setProfile('activity',this.value)">${ACTIVITY.map(a=>`<option value="${a.v}" ${Number(p.activity)===a.v?'selected':''}>${a.label}</option>`).join('')}</select></div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>目标</label><select onchange="setProfile('goal',this.value)">${GOALS.map(g=>`<option value="${g.id}" ${p.goal===g.id?'selected':''}>${g.name}</option>`).join('')}</select></div>
+      <div class="field"><label>速度 kg/周</label><select onchange="setProfile('rate',this.value)">${(p.goal==='maintain'?[0]:[0.25,0.5,0.75]).map(r=>`<option value="${r}" ${Number(p.rate)===r?'selected':''}>${r===0?'维持':r}</option>`).join('')}</select></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>目标体重 kg</label><input type="number" inputmode="decimal" step="0.1" value="${p.targetWeight}" onchange="setProfile('targetWeight',this.value)"></div>
+      <div class="field"><label>目标腰围 cm</label><input type="number" inputmode="decimal" step="0.1" value="${p.targetWaist}" onchange="setProfile('targetWaist',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>基础代谢与 TDEE</h3>
+    <div class="kpis">
+      <div class="kpi"><b>${bmr}</b><span>BMR（Mifflin-St Jeor）</span></div>
+      <div class="kpi"><b>${bmk!=null?Math.round(bmk):'—'}</b><span>BMR（Katch，需体脂）</span></div>
+      <div class="kpi"><b>${tdee}</b><span>TDEE（BMR × 活动系数）</span></div>
+      <div class="kpi"><b>${f.kcal}</b><span>公式目标摄入</span></div>
+    </div>
+    <div class="macro-row" style="margin-top:10px">
+      <div class="macro"><b>${f.protein}g</b><span>蛋白</span></div>
+      <div class="macro"><b>${f.fat}g</b><span>脂肪</span></div>
+      <div class="macro"><b>${f.carbs}g</b><span>碳水</span></div>
+    </div>
+    <div class="small" style="margin-top:8px">Mifflin：男 10w+6.25h−5a+5；女 10w+6.25h−5a−161。Katch：370+21.6×瘦体重。TDEE = BMR × 活动系数（1.2–1.9）。目标 = TDEE ± 速度×7700÷7。</div>
+    <div style="height:8px"></div>
+    <button class="btn" onclick="applyFormulaTargets()">按公式计算并应用到目标</button>
+    <div class="small" style="margin-top:6px">公式是估算；你自己的实测 TDEE 在「身体 → 每周复盘」里会自动算。</div>
+  </div>
+
+  <div class="card">
+    <h3>每日目标</h3>
+    <div class="row">
+      <div class="field"><label>摄入 kcal</label><input type="number" inputmode="numeric" value="${S.settings.targetKcal}" onchange="setSetting('targetKcal',this.value)"></div>
+      <div class="field"><label>蛋白 g</label><input type="number" inputmode="numeric" value="${S.settings.targetProtein}" onchange="setSetting('targetProtein',this.value)"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>脂肪 g</label><input type="number" inputmode="numeric" value="${S.settings.targetFat}" onchange="setSetting('targetFat',this.value)"></div>
+      <div class="field"><label>碳水 g</label><input type="number" inputmode="numeric" value="${S.settings.targetCarbs}" onchange="setSetting('targetCarbs',this.value)"></div>
+    </div>
+    <div class="field" style="margin-top:10px"><label>饮水目标 ml</label><input type="number" inputmode="numeric" value="${S.settings.waterTarget}" onchange="setSetting('waterTarget',this.value)"></div>
+  </div>
+
+  <div class="card">
+    <h3>数据 <span class="sub">已记录 ${days} 天</span></h3>
+    <button class="btn soft" onclick="exportJSON()">⬇︎ 导出 JSON 备份</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" onclick="exportCSV('daily')">⬇︎ 每日汇总 CSV</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" onclick="exportCSV('meals')">⬇︎ 饮食明细 CSV</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" onclick="exportCSV('workouts')">⬇︎ 训练明细 CSV</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" onclick="exportCSV('measurements')">⬇︎ 围度明细 CSV</button>
+    <div class="hr"></div>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importJSON(this)">
+    <button class="btn ghost" onclick="document.getElementById('importFile').click()">⬆︎ 导入 JSON 备份</button>
+    <div style="height:8px"></div>
+    <button class="btn danger" onclick="clearAll()">清空全部数据</button>
+    <div class="small" style="margin-top:8px;text-align:center">数据只存在本机浏览器。每周导出一次 JSON，换手机/清缓存前也能恢复。</div>
+  </div>
+
+  <div class="card">
+    <h3>食物库</h3>
+    <div class="help">内置 ${FOOD_DB.length} 种食物（参考《中国食物成分表》与 USDA；菜肴为常见做法估算），自定义 ${(S.customFoods||[]).length} 种。</div>
+    <div class="chips" style="margin-top:10px">${(S.customFoods||[]).map((f,i)=>`<span class="chip">${esc(f.n)} <span onclick="delCustomFood(${i})" style="color:#C0392B">✕</span></span>`).join('')||'<span class="small">还没有自定义食物</span>'}</div>
+  </div>
+
+  <div class="card">
+    <h3>中国居民膳食指南（2022）参考</h3>
+    <div class="help">
+      <b>谷类</b> 200–300g（全谷物/杂豆 50–150g）｜<b>薯类</b> 50–100g<br>
+      <b>蔬菜</b> 300–500g（深色占一半）｜<b>水果</b> 200–350g<br>
+      <b>畜禽肉</b> 40–75g｜<b>水产品</b> 40–75g｜<b>蛋类</b> 40–50g<br>
+      <b>奶类</b> 300–500g｜<b>大豆及坚果</b> 25–35g<br>
+      <b>油</b> 25–30g｜<b>盐</b> &lt;5g｜<b>饮水</b> 女 1500ml / 男 1700ml<br>
+      <span class="small">以上为成年人一日参考量；减脂期优先保证蛋白、蔬菜、全谷物，油盐不超。</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>科学依据与免责声明</h3>
+    <details><summary class="muted" style="cursor:pointer">展开查看</summary>
+    <div class="help" style="margin-top:8px">
+      <b>基础代谢</b>：Mifflin-St Jeor（1990）是成年人最常用的预测公式；Katch-McArdle 需要体脂率。<br>
+      <b>TDEE</b>：BMR × 活动系数（1.2 久坐 / 1.375 轻度 / 1.55 中度 / 1.725 高度 / 1.9 极高），是估算；实际值以体重反推为准。<br>
+      <b>7700 kcal/kg</b>：1kg 脂肪约 7700 kcal 的常用近似值，实际有个体差异。<br>
+      <b>蛋白</b>：减脂期 1.6–2.2 g/kg（ISSN/Helms 等建议），本工具默认 1.8 g/kg。<br>
+      <b>速度</b>：每周 0.5–1% 体重较可持续；本工具 0.25/0.5/0.75 kg/周。<br>
+      <b>BMI</b>：中国标准 18.5–23.9 正常、24–27.9 超重、≥28 肥胖；腰围女性 ≥80cm、男性 ≥85cm 为中心性肥胖；腰高比 &lt;0.5 更理想。<br>
+      <b>体脂估算</b>：美国海军（Navy）围度公式与 Deurenberg BMI 公式，均为估算，DEXA/InBody 更准。<br>
+      <b>月经周期</b>：按记录的开始日推算，平均周期默认 28 天；黄体期常见水潴留 0.5–2kg，预测仅供参考。<br>
+      <b>训练</b>：肌肥大 6–12 次、力量 3–6 次、RIR 1–3；每肌群每周 10–20 组；复合动作休息 90–180s、孤立 60–90s；HIIT 常用 Tabata 20s/10s×8。<br>
+      <b>食物数据</b>：参考《中国食物成分表》与 USDA FoodData Central；「菜肴」为常见做法的估算，实际油盐差异较大。<br>
+      <b>免责声明</b>：本工具面向无重大疾病的普通健康人群，不构成医疗建议。孕期/哺乳期、BMI≥28、心血管/代谢/肾脏疾病、糖尿病用药、进食障碍史、盆底功能障碍者，请先咨询医生或注册营养师。
+    </div></details>
+  </div>
+  <div class="footer-note">减脂工作台 v2.0 · 数据保存在本机 · 不联网</div>`;
+}
+function setSetting(k,v){S.settings[k]=Number(v)||0;save();render();}
+function setProfile(k,v){
+  if(['age','height','weight','activity','rate','targetWeight','targetWaist'].includes(k))S.profile[k]=Number(v)||0;
+  else S.profile[k]=v;
+  if(k==='goal'){if(v==='maintain')S.profile.rate=0;else if(Number(S.profile.rate)===0)S.profile.rate=0.5;}
+  save();render();
+}
+function applyFormulaTargets(){
+  const f=formulaTarget();
+  S.settings.targetKcal=f.kcal;S.settings.targetProtein=f.protein;S.settings.targetFat=f.fat;S.settings.targetCarbs=f.carbs;
+  save();render();toast('已按公式应用目标');
+}
+function delCustomFood(i){if(!confirm('删除这个自定义食物？'))return;S.customFoods.splice(i,1);save();render();}
+
+/* ===================== 弹窗框架 ===================== */
+function openSheet(html){const sh=document.getElementById('sheet');sh.innerHTML=html;document.getElementById('sheetWrap').classList.add('open');}
+function closeSheet(){document.getElementById('sheetWrap').classList.remove('open');stopTimers();}
+function stopTimers(){if(hiit.timer){clearInterval(hiit.timer);hiit.timer=null;}hiit.running=false;if(restTimer.timer){clearInterval(restTimer.timer);restTimer.timer=null;}restTimer.running=false;}
+function renderSheet(){
+  if(picker.kind==='workout'){openSheet(sheetWorkout());return;}
+  if(picker.kind==='exercise'){openSheet(sheetExerciseList());renderExerciseRows();return;}
+  if(picker.kind==='template'){openSheet(sheetTemplate());return;}
+  if(picker.kind==='timer'){openSheet(sheetTimer());updateTimerUI();return;}
+  if(picker.kind!=='food'){closeSheet();return;}
+  if(picker.step==='list'){
+    openSheet(`
+      <div class="sheet-head"><h3>添加到 ${MEALS.find(m=>m.id===picker.meal).name}</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <div class="search"><input id="foodSearch" placeholder="搜索食物，如 鸡蛋 / 鸡胸 / 米饭" oninput="renderFoodRows()"></div>
+      <div class="seg">${FOOD_CATS.map(c=>`<button class="${(picker.cat||'全部')===c?'on':''}" onclick="picker.cat='${c}';renderSheet()">${c}</button>`).join('')}</div>
+      <div class="food-list" id="foodList"></div>
+      <div class="hr"></div>
+      <button class="btn ghost" onclick="picker.step='custom';renderSheet()">＋ 找不到？手动添加食物</button>`);
+    renderFoodRows();
+  }else if(picker.step==='grams'){
+    const f=picker.food;
+    openSheet(`
+      <div class="sheet-head"><h3>${esc(f.n)}</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <div class="muted">每 100g：${f.k} kcal · 蛋白 ${f.p}g · 脂肪 ${f.f}g · 碳水 ${f.c}g</div>
+      <input class="big-input" id="gramsInput" type="number" inputmode="decimal" value="100" oninput="updateGramsPreview()">
+      <div class="chips">${[50,100,150,200,250].map(g=>`<button class="chip" onclick="setGrams(${g})">${g}g</button>`).join('')}</div>
+      <div id="gramsPreview" class="help" style="text-align:center"></div>
+      <div style="height:12px"></div>
+      <button class="btn" onclick="addPickedFood()">添加到${MEALS.find(m=>m.id===picker.meal).name}</button>`);
+    document.getElementById('gramsInput').focus();updateGramsPreview();
+  }else if(picker.step==='custom'){
+    openSheet(`
+      <div class="sheet-head"><h3>手动添加食物</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <div class="field"><label>食物名称</label><input id="cfName" placeholder="如：自制鸡肉丸"></div>
+      <div class="row" style="margin-top:10px"><div class="field"><label>热量 kcal /100g</label><input id="cfK" type="number" inputmode="decimal" placeholder="150"></div><div class="field"><label>蛋白 g /100g</label><input id="cfP" type="number" inputmode="decimal" placeholder="20"></div></div>
+      <div class="row" style="margin-top:10px"><div class="field"><label>脂肪 g /100g</label><input id="cfF" type="number" inputmode="decimal" placeholder="5"></div><div class="field"><label>碳水 g /100g</label><input id="cfC" type="number" inputmode="decimal" placeholder="10"></div></div>
+      <div style="height:12px"></div>
+      <button class="btn" onclick="saveCustomFood()">保存并继续</button>`);
+  }else if(picker.step==='edit'){
+    const it=picker.food;
+    openSheet(`
+      <div class="sheet-head"><h3>${esc(it.n)}</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <input class="big-input" id="gramsInput" type="number" inputmode="decimal" value="${it.g}">
+      <div style="height:12px"></div>
+      <button class="btn" onclick="saveEditItem()">保存</button>
+      <div style="height:8px"></div>
+      <button class="btn danger" onclick="delItem('${picker.meal}',${picker.idx});closeSheet()">删除</button>`);
+    document.getElementById('gramsInput').focus();
+  }else if(picker.step==='quickMeal'){
+    openSheet(`
+      <div class="sheet-head"><h3>${esc(picker.food.n)} 加到哪一餐？</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <div class="chips">${MEALS.map(m=>`<button class="chip" onclick="picker.meal='${m.id}';picker.step='grams';renderSheet()">${m.icon} ${m.name}</button>`).join('')}</div>`);
+  }
+}
+
+/* ===================== 食物选择 ===================== */
+function filteredFoods(q){
+  const cat=picker.cat||'全部';
+  q=(q||'').trim().toLowerCase();
+  return allFoods().filter(f=>(cat==='全部'||f.cat===cat)&&(!q||f.n.toLowerCase().includes(q)));
+}
+function renderFoodRows(){
+  const el=document.getElementById('foodList');
+  if(!el)return;
+  const q=document.getElementById('foodSearch')?document.getElementById('foodSearch').value:'';
+  picker.list=filteredFoods(q);
+  el.innerHTML=picker.list.length?picker.list.map((f,i)=>`<div class="food-row" onclick="pickFood(${i})">
+    <div><div class="n">${esc(f.n)}</div><div class="k">每100g ${f.k} kcal · 蛋白 ${f.p}g · ${f.cat}</div></div>
+    <button class="icon-btn" onclick="event.stopPropagation();toggleFav('${esc(f.n)}')">${(S.favorites||[]).includes(f.n)?'★':'☆'}</button></div>`).join(''):'<div class="empty">没有找到，试试手动添加</div>';
+}
+function pickFood(i){picker.food=picker.list[i];picker.step='grams';renderSheet();}
+function setGrams(g){const el=document.getElementById('gramsInput');el.value=g;updateGramsPreview();}
+function updateGramsPreview(){
+  const g=Number(document.getElementById('gramsInput').value)||0,f=picker.food,r=g/100;
+  document.getElementById('gramsPreview').innerHTML=`≈ <b>${Math.round(f.k*r)} kcal</b> · 蛋白 ${(f.p*r).toFixed(1)}g · 脂肪 ${(f.f*r).toFixed(1)}g · 碳水 ${(f.c*r).toFixed(1)}g`;
+}
+function addPickedFood(){
+  const g=Number(document.getElementById('gramsInput').value);
+  if(!g||g<=0){toast('请输入克数');return;}
+  dayRef(selDate).meals[picker.meal].push({n:picker.food.n,g});
+  save();closeSheet();render();toast('已添加');
+}
+function openFoodPicker(mealId){picker={kind:'food',step:'list',meal:mealId,food:null,cat:'全部'};renderSheet();}
+function openItemSheet(mealId,idx){const it=getDay(selDate).meals[mealId][idx];picker={kind:'food',step:'edit',meal:mealId,idx,food:it};renderSheet();}
+function saveEditItem(){const g=Number(document.getElementById('gramsInput').value);if(!g||g<=0){toast('请输入克数');return;}dayRef(selDate).meals[picker.meal][picker.idx].g=g;save();closeSheet();render();toast('已保存');}
+function delItem(mealId,idx){dayRef(selDate).meals[mealId].splice(idx,1);save();render();}
+function saveCustomFood(){
+  const n=document.getElementById('cfName').value.trim(),k=Number(document.getElementById('cfK').value);
+  if(!n){toast('请输入名称');return;}if(!k){toast('请输入热量');return;}
+  const f={n,k,p:Number(document.getElementById('cfP').value)||0,f:Number(document.getElementById('cfF').value)||0,c:Number(document.getElementById('cfC').value)||0,cat:'自定义',custom:true};
+  S.customFoods.push(f);save();picker.food=f;picker.step='grams';renderSheet();
+}
+function quickAdd(name){
+  const f=foodByName(name);if(!f)return;
+  picker={kind:'food',step:'quickMeal',food:f,meal:null};renderSheet();
+}
+function toggleFav(name){
+  const i=(S.favorites||[]).indexOf(name);
+  if(i>=0)S.favorites.splice(i,1);else S.favorites.push(name);
+  save();renderFoodRows();
+}
+function copyYesterday(){
+  const y=addDays(selDate,-1),yd=S.days[y];
+  if(!yd){toast('昨天没有记录');return;}
+  const day=dayRef(selDate);let n=0;
+  MEALS.forEach(m=>{if((yd.meals[m.id]||[]).length){day.meals[m.id]=(yd.meals[m.id]||[]).map(x=>({...x}));n++;}});
+  if(!n){toast('昨天没有饮食记录');return;}
+  save();render();toast('已复制昨天饮食');
+}
+
+/* ===================== 训练记录 ===================== */
+function openWorkoutSheet(kind,ex){picker={kind:'workout',workout:kind,ex:ex||null};renderSheet();}
+function sheetWorkout(){
+  const ex=picker.ex;
+  if(picker.workout==='strength'){
+    return `<div class="sheet-head"><h3>${ex?'记录 '+esc(ex.n):'添加力量训练'}</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      ${ex?`<div class="notice blue" style="margin-bottom:10px">${esc(ex.cue)}${ex.reg?`<br>退阶：${esc(ex.reg)}` :''}${ex.prog?` ｜ 进阶：${esc(ex.prog)}`:''}</div>`:''}
+      ${!ex?`<div class="chips">${['杠铃深蹲','杠铃卧推','杠铃划船','罗马尼亚硬拉','站姿推举','高位下拉','腿举','臀推','哑铃侧平举','平板支撑'].map(n=>`<button class="chip" onclick="picker.ex=EXERCISES.find(e=>e.n==='${n}');renderSheet()">${n}</button>`).join('')}</div>`:''}
+      <div class="field"><label>动作</label><input id="wName" value="${ex?esc(ex.n):''}" placeholder="如：深蹲"></div>
+      <div class="row" style="margin-top:10px"><div class="field"><label>组数</label><input id="wSets" type="number" inputmode="numeric" value="${ex?ex.sets:3}"></div><div class="field"><label>次数</label><input id="wReps" type="number" inputmode="numeric" value="${ex?ex.reps:8}"></div></div>
+      <div class="row" style="margin-top:10px"><div class="field"><label>重量 kg</label><input id="wWeight" type="number" inputmode="decimal" placeholder="40"></div><div class="field"><label>RPE 1-10</label><input id="wRpe" type="number" inputmode="numeric" placeholder="8"></div></div>
+      <div class="field" style="margin-top:10px"><label>肌群（用于统计训练量）</label><select id="wMuscle">${EX_MUSCLES.filter(m=>m!=='全部').map(m=>`<option ${ex&&ex.muscle===m?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div style="height:12px"></div>
+      <button class="btn" onclick="saveWorkout('strength')">保存</button>
+      <div style="height:8px"></div>
+      <button class="btn ghost" onclick="openTimer('rest')">⏲ 开始休息计时</button>`;
+  }
+  return `<div class="sheet-head"><h3>添加有氧</h3><button class="close" onclick="closeSheet()">✕</button></div>
+    <div class="chips">${['爬坡走','快走','慢跑','单车','椭圆机','跳绳','划船机','其他'].map(x=>`<button class="chip" onclick="document.getElementById('wName').value='${x}'">${x}</button>`).join('')}</div>
+    <div class="field"><label>项目</label><input id="wName" placeholder="如：爬坡走"></div>
+    <div class="row" style="margin-top:10px"><div class="field"><label>时长 分钟</label><input id="wDur" type="number" inputmode="numeric" placeholder="45"></div><div class="field"><label>坡度</label><input id="wIncline" type="number" inputmode="decimal" placeholder="12"></div></div>
+    <div class="field" style="margin-top:10px"><label>速度</label><input id="wSpeed" type="number" inputmode="decimal" placeholder="3"></div>
+    <div style="height:12px"></div><button class="btn" onclick="saveWorkout('cardio')">保存</button>`;
+}
+function saveWorkout(kind){
+  const name=document.getElementById('wName').value.trim();
+  if(!name){toast('请输入项目名称');return;}
+  const day=dayRef(selDate);if(!day.workouts)day.workouts=[];
+  const id='w'+Date.now()+Math.random().toString(36).slice(2,6);
+  if(kind==='strength'){
+    day.workouts.push({id,kind:'strength',name,sets:Number(document.getElementById('wSets').value)||0,reps:Number(document.getElementById('wReps').value)||0,weight:Number(document.getElementById('wWeight').value)||0,rpe:Number(document.getElementById('wRpe').value)||0,muscle:document.getElementById('wMuscle').value});
+  }else{
+    day.workouts.push({id,kind:'cardio',name,duration:Number(document.getElementById('wDur').value)||0,incline:Number(document.getElementById('wIncline').value)||0,speed:Number(document.getElementById('wSpeed').value)||0});
+  }
+  save();closeSheet();render();toast('已保存');
+}
+function delWorkoutById(id){const day=dayRef(selDate);day.workouts=(day.workouts||[]).filter(w=>w.id!==id);save();render();}
+
+/* ===================== 动作库 / 模板 ===================== */
+function openExercisePicker(){picker={kind:'exercise',cat:'全部',muscle:'全部'};renderSheet();}
+function sheetExerciseList(){
+  return `<div class="sheet-head"><h3>动作库</h3><button class="close" onclick="closeSheet()">✕</button></div>
+    <div class="search"><input id="exSearch" placeholder="搜索动作，如 深蹲 / 划船 / 波比" oninput="renderExerciseRows()"></div>
+    <div class="seg">${EX_CATS.map(c=>`<button class="${picker.cat===c?'on':''}" onclick="picker.cat='${c}';renderSheet()">${c}</button>`).join('')}</div>
+    <div class="seg">${EX_MUSCLES.map(c=>`<button class="${picker.muscle===c?'on':''}" onclick="picker.muscle='${c}';renderSheet()">${c}</button>`).join('')}</div>
+    <div class="food-list" id="exList"></div>`;
+}
+function renderExerciseRows(){
+  const el=document.getElementById('exList');
+  if(!el)return;
+  const q=(document.getElementById('exSearch')?document.getElementById('exSearch').value:'').trim().toLowerCase();
+  picker.exList=EXERCISES.filter(e=>(picker.cat==='全部'||e.cat===picker.cat)&&(picker.muscle==='全部'||e.muscle===picker.muscle)&&(!q||e.n.toLowerCase().includes(q)));
+  el.innerHTML=picker.exList.length?picker.exList.map((e,i)=>`<div class="ex" onclick="pickExercise(${i})">
+    <div class="top"><div class="food-name">${esc(e.n)}</div><span class="badge grey">${e.cat}</span></div>
+    <div class="meta">${e.muscle} · ${e.eq} · ${e.type} · ${e.sets}×${e.reps}</div>
+    <div class="cue">${esc(e.cue)}</div></div>`).join(''):'<div class="empty">没有找到这个动作</div>';
+}
+function pickExercise(i){picker.kind='workout';picker.workout='strength';picker.ex=picker.exList[i];renderSheet();}
+
+function openTemplates(){picker={kind:'template',view:'list'};renderSheet();}
+function sheetTemplate(){
+  if(picker.view==='detail'){
+    const t=TEMPLATES.find(x=>x.id===picker.tid);
+    return `<div class="sheet-head"><h3>${esc(t.name)}</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <div class="muted" style="margin-bottom:10px">${esc(t.desc)}</div>
+      ${t.days.map((d,di)=>`<div class="ex">
+        <div class="top"><div class="food-name">${esc(d.name)}</div><span class="badge blue">${esc(d.focus)}</span></div>
+        <div class="meta">${d.items.map(it=>`${it.n} ${it.sets}×${it.reps}`).join(' ｜ ')}</div>
+        <div style="margin-top:8px"><button class="btn soft sm" onclick="importTemplateDay('${t.id}',${di})">导入到 ${selDate.slice(5)} 的训练</button></div>
+      </div>`).join('')}
+      <button class="btn ghost" onclick="picker.view='list';renderSheet()">‹ 返回模板列表</button>`;
+  }
+  return `<div class="sheet-head"><h3>训练模板</h3><button class="close" onclick="closeSheet()">✕</button></div>
+    ${TEMPLATES.map(t=>`<div class="ex" onclick="picker.tid='${t.id}';picker.view='detail';renderSheet()">
+      <div class="top"><div class="food-name">${esc(t.name)}</div><span class="badge ${t.level==='入门'?'green':'orange'}">${t.level}</span></div>
+      <div class="meta">${esc(t.desc)}</div></div>`).join('')}
+    <div class="small">模板基于常见训练原则（复合动作优先、每肌群 10–20 组/周、6–12 次肌肥大、3–6 次力量）；请按自身水平调整重量和次数。</div>`;
+}
+function importTemplateDay(tid,di){
+  const t=TEMPLATES.find(x=>x.id===tid),d=t.days[di],day=dayRef(selDate);
+  if(!day.workouts)day.workouts=[];
+  d.items.forEach(it=>{
+    const ex=EXERCISES.find(e=>e.n===it.n);
+    day.workouts.push({id:'w'+Date.now()+Math.random().toString(36).slice(2,6),kind:'strength',name:it.n,sets:it.sets,reps:it.reps,weight:0,rpe:0,muscle:ex?ex.muscle:'全身',note:it.reps});
+  });
+  save();closeSheet();setView('train');toast('已导入 '+d.items.length+' 个动作');
+}
+
+/* ===================== 计时器 ===================== */
+function openTimer(mode){picker={kind:'timer',mode};renderSheet();}
+function sheetTimer(){
+  if(picker.mode==='hiit'){
+    return `<div class="sheet-head"><h3>HIIT 计时器</h3><button class="close" onclick="closeSheet()">✕</button></div>
+      <div class="timer-phase" id="hiitPhase">准备</div>
+      <div class="timer-big" id="hiitTime">00:00</div>
+      <div class="small" style="text-align:center;margin:4px 0 10px" id="hiitRound">第 0 / 8 轮</div>
+      <div class="row"><div class="field"><label>训练 s</label><input id="hWork" type="number" inputmode="numeric" value="${hiit.work}"></div><div class="field"><label>休息 s</label><input id="hRest" type="number" inputmode="numeric" value="${hiit.rest}"></div></div>
+      <div class="row" style="margin-top:10px"><div class="field"><label>轮数</label><input id="hRounds" type="number" inputmode="numeric" value="${hiit.rounds}"></div><div class="field"><label>准备 s</label><input id="hPrep" type="number" inputmode="numeric" value="${hiit.prep}"></div></div>
+      <div class="chips" style="margin-top:10px"><button class="chip" onclick="presetHIIT(20,10,8)">Tabata 20/10×8</button><button class="chip" onclick="presetHIIT(30,30,10)">30/30×10</button><button class="chip" onclick="presetHIIT(40,20,8)">40/20×8</button></div>
+      <div style="height:8px"></div>
+      <button class="btn" onclick="hiitStart()">开始</button>
+      <div style="height:8px"></div>
+      <div class="row"><button class="btn ghost" style="flex:1" onclick="hiitPause()">暂停/继续</button><button class="btn ghost" style="flex:1" onclick="hiitReset()">重置</button></div>
+      <div class="small" style="margin-top:8px;text-align:center">训练/休息切换会响铃 + 震动；屏幕熄灭时可能暂停，请保持屏幕常亮。</div>`;
+  }
+  return `<div class="sheet-head"><h3>休息计时</h3><button class="close" onclick="closeSheet()">✕</button></div>
+    <div class="timer-big" id="restTime">01:00</div>
+    <div class="chips" style="justify-content:center;margin-top:12px">${[30,60,90,120,180].map(s=>`<button class="chip" onclick="restStart(${s})">${s}s</button>`).join('')}</div>
+    <div style="height:10px"></div>
+    <div class="row"><button class="btn ghost" style="flex:1" onclick="restToggle()">暂停/继续</button><button class="btn ghost" style="flex:1" onclick="restReset()">重置</button></div>`;
+}
+function presetHIIT(w,r,n){hiit.work=w;hiit.rest=r;hiit.rounds=n;renderSheet();}
+let audioCtx=null;
+function beep(freq,dur){
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=freq;g.gain.value=0.18;o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+(dur||0.15));
+  }catch(e){}
+  try{if(navigator.vibrate)navigator.vibrate(60);}catch(e){}
+}
+function fmtClock(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function updateTimerUI(){
+  const t=document.getElementById('hiitTime');
+  if(t){
+    document.getElementById('hiitTime').textContent=fmtClock(hiit.left);
+    const names={prep:'准备',work:'训练',rest:'休息',done:'完成',idle:'准备'};
+    document.getElementById('hiitPhase').textContent=names[hiit.phase]||'准备';
+    document.getElementById('hiitRound').textContent='第 '+hiit.round+' / '+hiit.rounds+' 轮';
+  }
+  const rt=document.getElementById('restTime');
+  if(rt)document.getElementById('restTime').textContent=fmtClock(restTimer.left);
+}
+function hiitStart(){
+  if(hiit.running)return;
+  hiit.work=Number(document.getElementById('hWork').value)||20;
+  hiit.rest=Number(document.getElementById('hRest').value)||10;
+  hiit.rounds=Number(document.getElementById('hRounds').value)||8;
+  hiit.prep=Number(document.getElementById('hPrep').value)||10;
+  hiit.phase='prep';hiit.left=hiit.prep;hiit.round=0;hiit.running=true;
+  if(hiit.timer)clearInterval(hiit.timer);
+  hiit.timer=setInterval(hiitTick,1000);
+  updateTimerUI();
+}
+function hiitTick(){
+  if(!hiit.running)return;
+  hiit.left--;
+  if(hiit.left<=0){
+    if(hiit.phase==='prep'){hiit.phase='work';hiit.left=hiit.work;hiit.round=1;beep(880);}
+    else if(hiit.phase==='work'){
+      if(hiit.round>=hiit.rounds){hiit.phase='done';hiit.running=false;clearInterval(hiit.timer);hiit.timer=null;beep(1320,.4);}
+      else{hiit.phase='rest';hiit.left=hiit.rest;beep(440);}
+    }else if(hiit.phase==='rest'){hiit.round++;hiit.phase='work';hiit.left=hiit.work;beep(880);}
+  }
+  updateTimerUI();
+}
+function hiitPause(){if(hiit.phase==='done'||hiit.phase==='idle')return;hiit.running=!hiit.running;if(hiit.running){if(!hiit.timer)hiit.timer=setInterval(hiitTick,1000);}else{clearInterval(hiit.timer);hiit.timer=null;}}
+function hiitReset(){if(hiit.timer)clearInterval(hiit.timer);hiit.timer=null;hiit.running=false;hiit.phase='idle';hiit.left=0;hiit.round=0;updateTimerUI();}
+function restStart(sec){restTimer.total=sec;restTimer.left=sec;restTimer.running=true;if(restTimer.timer)clearInterval(restTimer.timer);restTimer.timer=setInterval(restTick,1000);updateTimerUI();}
+function restTick(){
+  if(!restTimer.running)return;
+  restTimer.left--;
+  if(restTimer.left<=0){restTimer.left=0;restTimer.running=false;clearInterval(restTimer.timer);restTimer.timer=null;beep(1320,.4);}
+  updateTimerUI();
+}
+function restToggle(){if(restTimer.left<=0)return;restTimer.running=!restTimer.running;if(restTimer.running){if(!restTimer.timer)restTimer.timer=setInterval(restTick,1000);}else{clearInterval(restTimer.timer);restTimer.timer=null;}}
+function restReset(){if(restTimer.timer)clearInterval(restTimer.timer);restTimer.timer=null;restTimer.running=false;restTimer.left=restTimer.total;updateTimerUI();}
+
+/* ===================== 导入导出 ===================== */
+function download(name,text,type){
+  const blob=new Blob([text],{type:type||'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function exportJSON(){download('减脂工作台备份_'+todayStr()+'.json',JSON.stringify(S,null,2),'application/json');toast('已导出 JSON');}
+function csvCell(v){if(v==null)return '';const s=String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
+function exportCSV(kind){
+  let head,rows=[];
+  if(kind==='daily'){
+    head=['日期','体重kg','7日均重','腰围cm','臀围cm','大腿cm','上臂cm','胸围cm','颈围cm','睡眠h','步数','饥饿感','压力','精力','饮水ml','训练','热量kcal','蛋白g','脂肪g','碳水g','备注'];
+    rows=Object.keys(S.days).sort().map(d=>{const day=S.days[d],t=dayTotals(day),a=avgWeight(d,7);return [d,day.weight,a!=null?a.toFixed(2):'',day.waist,day.hip,day.thigh,day.arm,day.chest,day.neck,day.sleep,day.steps,day.hunger,day.stress,day.energy,day.water,day.training,Math.round(t.k),round1(t.p),round1(t.f),round1(t.c),day.note||''];});
+  }else if(kind==='meals'){
+    head=['日期','餐次','食物','克数','热量kcal','蛋白g','脂肪g','碳水g'];
+    Object.keys(S.days).sort().forEach(d=>{MEALS.forEach(m=>{(S.days[d].meals[m.id]||[]).forEach(it=>{const x=itemMacros(it);rows.push([d,m.name,it.n,it.g,Math.round(x.k),round1(x.p),round1(x.f),round1(x.c)]);});});});
+  }else if(kind==='workouts'){
+    head=['日期','类型','项目','组数','次数','重量kg','RPE','时长min','坡度','速度','肌群'];
+    Object.keys(S.days).sort().forEach(d=>{(S.days[d].workouts||[]).forEach(w=>{rows.push([d,w.kind==='cardio'?'有氧':'力量',w.name,w.sets||'',w.reps||'',w.weight||'',w.rpe||'',w.duration||'',w.incline||'',w.speed||'',w.muscle||'']);});});
+  }else{
+    head=['日期','腰围','臀围','大腿','上臂','胸围','颈围','体脂Navy','BMI'];
+    rows=Object.keys(S.days).sort().map(d=>{
+      const day=S.days[d];
+      const w=day.weight||S.profile.weight;
+      const b=w&&S.profile.height?w/Math.pow(S.profile.height/100,2):null;
+      return [d,day.waist,day.hip,day.thigh,day.arm,day.chest,day.neck,bodyFatNavy(d)!=null?round1(bodyFatNavy(d)):'',b!=null?round1(b):''];
+    });
+  }
+  const csv='\ufeff'+[head.map(csvCell).join(','),...rows.map(r=>r.map(csvCell).join(','))].join('\n');
+  download(`减脂_${kind}_${todayStr()}.csv`,csv,'text/csv;charset=utf-8');toast('已导出 CSV');
+}
+function importJSON(input){
+  const file=input.files&&input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const obj=JSON.parse(r.result);
+      const m=migrate(obj);
+      if(!m)throw new Error('bad');
+      if(!confirm('导入会覆盖当前全部数据，确定吗？'))return;
+      S=m;normalizeState();save();render();toast('导入成功');
+    }catch(e){toast('导入失败：文件格式不对');}
+    input.value='';
+  };
+  r.readAsText(file);
+}
+function clearAll(){
+  if(!confirm('确定清空全部数据？建议先导出 JSON 备份。'))return;
+  if(!confirm('再确认一次：清空后无法恢复。'))return;
+  S=defaultState();save();render();toast('已清空');
+}
+
+/* ===================== 首次使用引导 ===================== */
+function openOnboarding(){
+  openSheet(`
+  <div class="sheet-head"><h3>欢迎使用减脂工作台</h3><button class="close" onclick="closeSheet()">✕</button></div>
+  <div class="help" style="margin-bottom:10px">填 6 项，自动算 BMR、TDEE 和每日目标；之后可在「我的」修改。</div>
+  <div class="row"><div class="field"><label>性别</label><select id="obSex"><option value="female">女</option><option value="male">男</option></select></div><div class="field"><label>年龄</label><input id="obAge" type="number" inputmode="numeric" value="28"></div></div>
+  <div class="row" style="margin-top:10px"><div class="field"><label>身高 cm</label><input id="obHeight" type="number" inputmode="decimal" value="160"></div><div class="field"><label>体重 kg</label><input id="obWeight" type="number" inputmode="decimal" step="0.1" value="60"></div></div>
+  <div class="field" style="margin-top:10px"><label>活动水平</label><select id="obActivity">${ACTIVITY.map(a=>`<option value="${a.v}" ${a.v===1.55?'selected':''}>${a.label}</option>`).join('')}</select></div>
+  <div class="row" style="margin-top:10px"><div class="field"><label>目标</label><select id="obGoal"><option value="lose">减脂</option><option value="maintain">维持</option><option value="gain">增肌</option></select></div><div class="field"><label>速度 kg/周</label><select id="obRate"><option value="0.25">0.25</option><option value="0.5" selected>0.5</option><option value="0.75">0.75</option></select></div></div>
+  <div class="row" style="margin-top:10px"><div class="field"><label>目标体重 kg</label><input id="obTarget" type="number" inputmode="decimal" step="0.1" value="55"></div><div class="field"><label>目标腰围 cm</label><input id="obWaist" type="number" inputmode="decimal" step="0.1" value="75"></div></div>
+  <div style="height:12px"></div>
+  <button class="btn" onclick="finishOnboarding()">开始使用</button>
+  <div class="small" style="margin-top:8px;text-align:center">数据只存在本机；有重大疾病请先咨询医生。</div>`);
+}
+function finishOnboarding(){
+  const p=S.profile;
+  p.sex=document.getElementById('obSex').value;
+  p.age=Number(document.getElementById('obAge').value)||28;
+  p.height=Number(document.getElementById('obHeight').value)||160;
+  p.weight=Number(document.getElementById('obWeight').value)||60;
+  p.activity=Number(document.getElementById('obActivity').value)||1.55;
+  p.goal=document.getElementById('obGoal').value;
+  p.rate=Number(document.getElementById('obRate').value)||0.5;
+  p.targetWeight=Number(document.getElementById('obTarget').value)||Math.round(p.weight*0.92);
+  p.targetWaist=Number(document.getElementById('obWaist').value)||75;
+  const f=formulaTarget();
+  S.settings.targetKcal=f.kcal;S.settings.targetProtein=f.protein;S.settings.targetFat=f.fat;S.settings.targetCarbs=f.carbs;
+  save();closeSheet();render();toast('已生成你的目标');
+}
+
+/* ===================== 启动 ===================== */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+render();
+if(!localStorage.getItem(KEY)){save();}
+if(firstRun&&((typeof location==='undefined')||!location.hash)){setTimeout(openOnboarding,500);}
+
+
+
+</script>
+</body>
+</html>
